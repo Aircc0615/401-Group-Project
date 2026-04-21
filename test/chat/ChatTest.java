@@ -1,4 +1,4 @@
-package test;
+package test.chat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
