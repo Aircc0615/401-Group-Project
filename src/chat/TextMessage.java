@@ -12,6 +12,12 @@ public class TextMessage {
 		this.userId = userId;
 		this.timestamp = timestamp;
 	}
+	public TextMessage(String text, String username, int userId) {
+		this.text = text;
+		this.username = username;
+		this.userId = userId;
+		this.timestamp = Instant.now();
+	}
 	public String getText() {
 		return text;
 	}
