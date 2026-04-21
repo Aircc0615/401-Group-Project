@@ -1,8 +1,11 @@
+package src.networking;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import src.chat.TextMessage;
 
 public class Client {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -39,7 +42,7 @@ public class Client {
             while(!text.equals("!exitChat")) {
 
                 text = sin.nextLine(); //read in user input
-                textMessage textMessage = new textMessage(text);
+                TextMessage textMessage = new TextMessage();
 
                 if(text.equals("!exitChat")){ //this sends a logout message to the server
                     message = new Message(MainType.AUTHENTICATION, SubType.LOGOUT, Status.REQUEST, textMessage.getText());

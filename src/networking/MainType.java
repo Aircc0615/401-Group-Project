@@ -1,3 +1,4 @@
+package src.networking;
 public enum MainType {
     AUTHENTICATION,
     DISPLAY,

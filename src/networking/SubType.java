@@ -1,3 +1,4 @@
+package src.networking;
 public enum SubType {
     LOGIN, LOGOUT, LOGIN_RESPONSE, //authentication
     OPEN_CHAT, CHAT_LIST, CHAT_USER, CREATE_GC, ADD_USER_TO_GC, REMOVE_USER_FROM_GC, DELETE_GC, //chat operations
