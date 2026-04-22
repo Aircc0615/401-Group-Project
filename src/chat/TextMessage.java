@@ -1,4 +1,4 @@
-package src.chat;
+package chat;
 import java.time.Instant;
 
 public class TextMessage {

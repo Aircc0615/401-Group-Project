@@ -1,5 +1,5 @@
-package src.chat;
-enum ChatType {
+package chat;
+public enum ChatType {
   PRIVATE,
   GROUP
 }
