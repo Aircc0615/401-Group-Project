@@ -74,9 +74,13 @@ public class Chat {
 
 	//getters
 	public TextMessage getMessage(int messageIndex) {
+		if(messageIndex >= numMessages)
+			throw new IllegalArgumentException();
 		return messages[messageIndex];
 	}
 	public int getMemberId(int memberIndex) {
+		if(memberIndex >= numMembers)
+			throw new IllegalArgumentException();
 		return memberIds[memberIndex];
 	}
 	public int getCreatorId() {
