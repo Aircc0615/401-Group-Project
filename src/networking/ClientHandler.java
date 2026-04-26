@@ -14,13 +14,14 @@ public class ClientHandler implements Runnable{
     private int userId;
     private Server server;
 
-    public ClientHandler(Socket socket){
+    public ClientHandler(Socket socket, Server server){
         this.clientSocket = socket;
+        this.server = server;
     }
 
     //helper functions
     public void successfulLogin(ObjectOutputStream objectOutputStream, List<Message> messageList) throws IOException {
-        Message loginSuccess = new Message(MainType.AUTHENTICATION, SubType.LOGIN_RESPONSE , Status.SUCCESS, "Login successful"); //create a login success message to send to the user
+        Message loginSuccess = new Message(MainType.AUTHENTICATION, SubType.LOGIN_RESPONSE , Status.SUCCESS, "Login successful", null); //create a login success message to send to the user
         objectOutputStream.writeObject(loginSuccess); //sends back the successful login message
         messageList.add(loginSuccess); //login message that is sent out from server to client gets added to the array
     }
@@ -29,11 +30,39 @@ public class ClientHandler implements Runnable{
         System.out.println("");
     }
     
+    public boolean performAuthenticationOperation(Socket clientSocket, InputStream clientInputStream, ObjectOutputStream objectOutputStream, Message message, List<Message> messageList) throws IOException {
+        //if the login is successful we perform the next step, otherwise we send a failed response
+        if(message.subType == SubType.LOGIN) {
+            successfulLogin(objectOutputStream, messageList); //this function at the moment just sends the user a successful login response message and adds the message to our message list array
+			return true; //if successful/this needs to be changed if false but for the current version set to true
+        }
+
+        //this could be moved into its own function, i just have it here since it was listed as a subtype, i assumed it was associated to our authentication module but
+        else if (message.subType == SubType.LOGOUT){
+            //logout function here
+            // if(successfulLogout()) return true;
+            // else false
+         }
+
+        return false; //same here might need to be changed
+    }
+    
     public void sendText(Socket clientSocket, Message message, ObjectOutputStream objectOutputStream) throws IOException {
         System.out.println("From " + clientSocket.getInetAddress().getHostAddress() + ": " + message.getText()); //display message along with who its from
         String toUpperMsg = message.getText().toUpperCase();
-        Message msgReceipt = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE ,Status.SUCCESS, toUpperMsg); //At the moment this just echoes and doesnt handle sending to other clients
-        objectOutputStream.writeObject(msgReceipt);
+        Message msgReceipt = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE ,Status.SUCCESS, toUpperMsg, null); //At the moment this just echoes and doesnt handle sending to other clients
+        List<Message> echoMessages = new ArrayList<>();
+        echoMessages.add(msgReceipt);
+        objectOutputStream.writeObject(echoMessages);
+    }
+    
+    public void receiveTexts(Socket clientSocket, Message message, ObjectOutputStream objectOutputStream) throws IOException {
+        System.out.println("From " + message.getUser().getUsername() + ": " + message.getText()); //display message along with who its from
+        String toUpperMsg = message.getText().toUpperCase();
+        Message msgReceipt = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE ,Status.SUCCESS, toUpperMsg, null); //At the moment this just echoes and doesnt handle sending to other clients
+        List<Message> incomingMessages = new ArrayList<>();
+        incomingMessages.add(msgReceipt);
+        objectOutputStream.writeObject(incomingMessages);
     }
 
     //facade/wrapper function that calls the function corresponding to the message types
@@ -128,7 +157,7 @@ public class ClientHandler implements Runnable{
             messageList.add(message); //add the client message to the array of messages on the server side
 
             if (message.mainType == MainType.AUTHENTICATION) { //if its a login
-                boolean authenticatedUser = server.performAuthenticationOperation(clientSocket, clientInputStream, objectOutputStream, message, messageList); //returns true if its a valid user/false if not
+                boolean authenticatedUser = performAuthenticationOperation(clientSocket, clientInputStream, objectOutputStream, message, messageList); //returns true if its a valid user/false if not
 
                 if (authenticatedUser) { //if theyre a valid user they can go ahead and send messages
                     while (message.subType != SubType.LOGOUT) {
@@ -139,7 +168,7 @@ public class ClientHandler implements Runnable{
                         performMessageOperation(clientSocket, clientInputStream, objectOutputStream, message, messageList); //this would perform the appropriate operation depending on the message Main and Sub types
                     }
 
-                    Message logoutSuccess = new Message(MainType.AUTHENTICATION, SubType.LOGOUT, Status.SUCCESS, "Logout successful");
+                    Message logoutSuccess = new Message(MainType.AUTHENTICATION, SubType.LOGOUT, Status.SUCCESS, "Logout successful", null);
                     messageList.add(logoutSuccess);
                     objectOutputStream.writeObject(logoutSuccess);
 

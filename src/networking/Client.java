@@ -1,6 +1,7 @@
 package networking;
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -16,9 +17,20 @@ public class Client {
 	static List<Message> messageHistory = new ArrayList<>();
 	static Scanner sin = new Scanner(System.in);
 	
+	public static Socket connectToServer() throws UnknownHostException, IOException {
+        int port = 7777;
+        String host = "localhost";
+
+        Socket clientSideSocket = new Socket(host, port); //create a client side socket that connects to server with the host and port specified
+        System.out.println("Connected to: " + clientSideSocket.getInetAddress().getHostAddress());
+
+        outputStream = clientSideSocket.getOutputStream(); //output that were sending to server
+        objectOutputStream = new ObjectOutputStream(outputStream); //deconstructing the object were sending, this serializes the object
+		return clientSideSocket;
+	}
 	
 	public static boolean login(User user, ObjectOutputStream objectOutputStream, Socket clientSideSocket) throws IOException, ClassNotFoundException {
-        System.out.println(user.getUsername() + "attempting to log in...");
+        System.out.println(user.getUsername() + " attempting to log in...");
         
         Message loginRequestMessage = new Message(MainType.AUTHENTICATION, SubType.LOGIN, Status.REQUEST, user.getUsername() + "requesting login", user); //login message created
         messageHistory.add(loginRequestMessage); //add the login message to the message history
@@ -33,7 +45,6 @@ public class Client {
         
         if(incomingLoginResponse.status == Status.SUCCESS) {
             System.out.println(incomingLoginResponse.getText() + "\n");
-            //List<textMessage> textMessageHistory = new ArrayList<>(); This isnt needed (likely will use this in communication system)
             System.out.println("Enter text to send!\n");
             return true;
         }
@@ -43,58 +54,50 @@ public class Client {
         }
 	}
 	
-	public static boolean sendMessage(User user) throws IOException {
+	public static void sendMessage(User user, Socket clientSideSocket) throws IOException {
 		Message message;
     	String text = "";
-    	boolean logOut = false;
-        while(!text.equals("!exitChat")) {
+
+        while(!clientSideSocket.isClosed()) {
         	text = sin.nextLine(); //read in user input
             TextMessage textMessage = new TextMessage(text, user.getUsername(), user.getId()); //let 0 represent some userID
 
-            if(text.equals("!exitChat")){ //this sends a logout message to the server
-                message = new Message(MainType.AUTHENTICATION, SubType.LOGOUT, Status.REQUEST, textMessage.getText(), user);
-                messageHistory.add(message);
-                logOut = true;
-                objectOutputStream.writeObject(message); //where the object gets serialized and sent
-                return logOut;
-            }
-            else { //normal text being sent
-                 //user input is used to make textMessage object
-                message = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE , Status.REQUEST, textMessage.getText(), user);
-                messageHistory.add(message); //the message the user input should be sent
-                // textMessageHistory.add(textMessage); add the text message to the text message history array | This isnt needed (likely will use this in communication system)
-                objectOutputStream.writeObject(message); //where the object gets serialized and sent
-            }
+            message = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE , Status.REQUEST, textMessage.getText(), user);
+            messageHistory.add(message); //the message the user input should be sent
+            // textMessageHistory.add(textMessage); add the text message to the text message history array | This isnt needed (likely will use this in communication system)
+            objectOutputStream.writeObject(message); //where the object gets serialized and sent
         }
-        return logOut;
+     
 	}
 	
 	public static void listenForServerMessages(ObjectInputStream objectInputStream, Socket clientSideSocket) throws ClassNotFoundException, IOException {
-        List<Message> incomingServerMessages = (List<Message>) objectInputStream.readObject();
-        incomingServerMessages.forEach(msg -> {
-            if(msg.subType == SubType.LOGOUT) {
-                System.out.println("Logging out!"); //after user logs out we can close the client side socket
-                try {
-					clientSideSocket.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            }
-            else System.out.println("\nServer side echo " + clientSideSocket.getInetAddress().getHostAddress() + ": " + msg.getText() + '\n'); //display message along with who its from
-        });
+        while(!clientSideSocket.isClosed()) {
+			List<Message> incomingServerMessages = (List<Message>) objectInputStream.readObject();
+	        incomingServerMessages.forEach(msg -> {
+	            if(msg.subType == SubType.LOGOUT) {
+	                System.out.println("Logging out!"); //after user logs out we can close the client side socket
+	                try {
+						clientSideSocket.close(); //once the server actually sends the logout message the socket can close
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	            }
+	            else { 
+	            	if(msg.getUser() != null)
+	            		System.out.println("\n" + msg.getUser().getUsername() + ": " + msg.getText() + '\n'); //display message along with who its from
+	            	else {
+	            		System.out.println("\nServer: " + msg.getText() + '\n');
+	            	}
+	            }
+            });
+        }
 	}
 	
     public static void main(String[] args) throws IOException, ClassNotFoundException {
          //cin == sin
-        int port = 7777;
-        String host = "localhost";
-
-        Socket clientSideSocket = new Socket(host, port); //create a client side socket that connects to server with the host and port specified
-        System.out.println("Connected to: " + clientSideSocket.getInetAddress().getHostAddress());
-
-        outputStream = clientSideSocket.getOutputStream(); //output that were sending to server
-        objectOutputStream = new ObjectOutputStream(outputStream); //deconstructing the object were sending, this serializes the object
+    	
+    	Socket clientSideSocket = connectToServer();
 
         System.out.println("Enter Login!");
 		String username = "username";// sin.nextLine() user would enter login info here
@@ -103,11 +106,20 @@ public class Client {
         
         boolean authenticatedUser = login(user, objectOutputStream, clientSideSocket);
 
-        while(authenticatedUser) {
-        	if(!sendMessage(user))
-        		break;
-            listenForServerMessages(objectInputStream, clientSideSocket);
-//          messageHistory.add(incomingServerMessages);
+        if (authenticatedUser) {
+        	Thread serverListener = new Thread(new Runnable() {
+        		public void run() {
+        			try {
+						listenForServerMessages(objectInputStream, clientSideSocket);
+					} catch (ClassNotFoundException | IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}     
+        		}
+    		});
+             
+            serverListener.start();
+        	sendMessage(user, clientSideSocket);	
         }
     }
 

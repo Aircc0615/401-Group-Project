@@ -61,4 +61,8 @@ public class Message implements Serializable { //serialize takes the object and 
     public Date getDate() { return date; }
 
     public Instant getTimeStamp() { return timeStamp; }
+
+	public User getUser() {
+		return user;
+	}
 }
