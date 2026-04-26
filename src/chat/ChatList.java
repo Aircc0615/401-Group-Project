@@ -1,5 +1,4 @@
-
-	package chat;
+package chat;
 import java.time.Instant;
 
 public class ChatList {
