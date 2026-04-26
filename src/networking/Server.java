@@ -1,4 +1,4 @@
-package src.networking;
+package networking;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -44,9 +44,11 @@ public class Server {
             objectOutputStream.writeObject(loginSuccess); //sends back the successful login message
             messageList.add(loginSuccess); //login message that is sent out from server to client gets added to the array
         }
+        
         public void failedLoginAttempt(){
             System.out.println("");
         }
+        
         public void sendText(Socket clientSocket, Message message, ObjectOutputStream objectOutputStream) throws IOException {
             System.out.println("From " + clientSocket.getInetAddress().getHostAddress() + ": " + message.getText()); //display message along with who its from
             String toUpperMsg = message.getText().toUpperCase();
@@ -56,7 +58,6 @@ public class Server {
 
         //facade/wrapper function that calls the function corresponding to the message types
         public void performMessageOperation(Socket clientSocket, InputStream clientInputStream, ObjectOutputStream objectOutputStream, Message message, List<Message> messageList) throws IOException { //mainType:  AUTHENTICATION, DISPLAY, TEXT, CHAT_OPERATION, AUDIT_OPERATION
-
             if (message.mainType == MainType.DISPLAY) {
                 switch (message.subType){
                     case SubType.ACTUAL_CHAT:

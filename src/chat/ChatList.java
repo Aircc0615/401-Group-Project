@@ -1,14 +1,17 @@
-package src.chat;
+
+	package chat;
 import java.time.Instant;
 
 public class ChatList {
 	private Chat[] chats;
 	private int numChats;
+	
 	public ChatList() {
 		//default chat size
 		chats = new Chat[8];
 		numChats = 0;
 	}
+	
 
 	//inserts a chat in the array based on the order of the timestamp
 	public void addChat(Chat chat) {
@@ -35,20 +38,25 @@ public class ChatList {
 		chats[arrayIndex] = chat;
 		numChats++;
 	}
+	
 
 	//getters
 	public TextMessage getChatMessage(int chatIndex, int messageIndex) {
 		return chats[chatIndex].getMessage(messageIndex);
 	}
+	
 	public int getChatMemberId(int chatIndex, int memberIndex) {
 		return chats[chatIndex].getMemberId(memberIndex);
 	}
+	
 	public Instant getChatNewestUpdate(int chatIndex) {
 		return chats[chatIndex].getNewestUpdate();
 	}
+	
 	public Chat getChat(int chatIndex) {
 		return chats[chatIndex];
 	}
+	
 
 	//add message
 	public void addChatMessage(int chatIndex, TextMessage message) {
@@ -65,6 +73,7 @@ public class ChatList {
 			return;
 		chat.addMember(memberId); //add member
 	}
+	
 
 	//attempt to remove a member from a chat
 	public void removeChatMember(int chatIndex, int memberId, int fromId) {
@@ -76,6 +85,7 @@ public class ChatList {
 			return;
 		chat.removeMember(memberId); //remove member
 	}
+	
 
 	//Attempts the delete the chat with id "chatId"
 	public void deleteChat(int chatId, int fromId) {
@@ -101,6 +111,7 @@ public class ChatList {
 		}
 		numChats--; // decrement numchats
 	}
+	
 
 	//returns a string of all chat ids in the list separated by ','
 	public String toString() {

@@ -1,3 +1,5 @@
+package user;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -65,16 +67,6 @@ public class User implements Serializable {
         this.unreadChatCount = 0;
     }
 
-   
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     public boolean authenticateLogin(String username, String password) {

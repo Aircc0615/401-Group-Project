@@ -1,11 +1,12 @@
-package src.networking;
+package networking;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import src.chat.TextMessage;
+import chat.TextMessage;
+import user.User;
 
 public class Client {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -20,20 +21,24 @@ public class Client {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream); //deconstructing the object were sending, this serializes the object
 
         System.out.println("Enter Login!");
+        
+        String username = "Gary";// sin.nextLine() user would enter login info here
+        String password = "password";
+        User user = new User(username, password);
 
-        String loginText = "username/password object"; // sin.nextLine() user would enter login info here
-        Message message = new Message(MainType.AUTHENTICATION, SubType.LOGIN, Status.REQUEST, loginText); //login message created
+        Message loginRequestMessage = new Message(MainType.AUTHENTICATION, SubType.LOGIN, Status.REQUEST, user.getUsername() + "requesting login"); //login message created
 
         List<Message> messageHistory = new ArrayList<>();
-        messageHistory.add(message); //add the login message to the message history
+        messageHistory.add(loginRequestMessage); //add the login message to the message history
 
-
-        objectOutputStream.writeObject(message); //sending the login message to server
+        objectOutputStream.writeObject(loginRequestMessage); //sending the login message to server
 
         InputStream serverInputStream = clientSideSocket.getInputStream(); //whatever is coming in from the server
         ObjectInputStream objectInputStream = new ObjectInputStream(serverInputStream); // we need to reconstruct the message object
         Message incomingLoginResponse = (Message) objectInputStream.readObject(); //deSerialized the message
 
+        Message message;
+        
         if(incomingLoginResponse.status == Status.SUCCESS) {
             System.out.println(incomingLoginResponse.getText() + "\n");
             String text = "";
@@ -42,7 +47,7 @@ public class Client {
             while(!text.equals("!exitChat")) {
 
                 text = sin.nextLine(); //read in user input
-                TextMessage textMessage = new TextMessage();
+                TextMessage textMessage = new TextMessage(text, user.getUsername(), 0); //let 0 represent some userID
 
                 if(text.equals("!exitChat")){ //this sends a logout message to the server
                     message = new Message(MainType.AUTHENTICATION, SubType.LOGOUT, Status.REQUEST, textMessage.getText());

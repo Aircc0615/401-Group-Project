@@ -1,4 +1,4 @@
-package src.chat;
+package chat;
 import java.time.Instant;
 
 public class Chat {
@@ -11,6 +11,7 @@ public class Chat {
 	private static int count = 1;
 	private int chatId;
 	private Instant newestUpdate;
+	
 	public Chat(int creatorId, int[] memberIds, ChatType type) {
 		//Might need to Change this for dynamic arrays
 		numMembers = memberIds.length;
@@ -23,6 +24,7 @@ public class Chat {
 		messages = new TextMessage[50];
 		numMessages = 0;
 	}
+	
 	//Will need to figure out at what level of abstraction to load files
 	//public Chat(String file) {}
 
@@ -39,6 +41,11 @@ public class Chat {
 		messages[numMessages++] = message;
 		newestUpdate = message.getTimestamp();
 	}
+	
+	public TextMessage getMessage(int messageIndex) {
+		return messages[messageIndex];
+	}
+	
 
 	//adds a new member to the chat
 	public void addMember(int memberId) {
@@ -52,6 +59,11 @@ public class Chat {
 		//insert the member id
 		memberIds[numMembers++] = memberId;
 	}
+	
+	public int getMemberId(int memberIndex) {
+		return memberIds[memberIndex];
+	}
+	
 
 	//removes the member from the chat
 	public void removeMember(int memberId) {
@@ -85,18 +97,23 @@ public class Chat {
 			throw new IndexOutOfBoundsException();
 		return memberIds[memberIndex];
 	}
+	
 	public int getCreatorId() {
 		return chatCreatorId;
 	}
+	
 	public int getChatId() {
 		return chatId;
 	}
+	
 	public ChatType getChatType() {
 		return chatType;
 	}
+	
 	public Instant getNewestUpdate() {
 		return newestUpdate;
 	}
+	
 	//returns string in the format:
 	//member1_id,member2_id,member3_id
 	//chat_type
@@ -129,6 +146,7 @@ public class Chat {
 		retStr += '\n';
 		//chat creator id
 		retStr += chatCreatorId;
+	
 		//chat messages
 		for(int i = 0; i < numMessages; i++) {
 			TextMessage message = messages[i];

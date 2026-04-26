@@ -1,4 +1,4 @@
-package src.networking;
+package networking;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
@@ -126,8 +126,3 @@ public class Message implements Serializable { //serialize takes the object and 
     public String getChatLog() { return chatLog; }
     
 }
-
-
-// three types of messages login,text, logout
-// immutable to the client
-// sending messages between server and client objects
