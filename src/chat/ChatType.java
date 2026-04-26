@@ -1,5 +1,5 @@
 package chat;
-enum ChatType {
+public enum ChatType {
   PRIVATE,
   GROUP
 }
