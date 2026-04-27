@@ -9,10 +9,10 @@ import chat.ChatList;
 import user.User;
 
 public class Server {
-	private User[] users;
+	private List<User> users = new ArrayList<>();
 	private int numUsers;
 	private ChatList chats;
-	private User[] onlineUsers;
+	private List<User> onlineUsers = new ArrayList<>();
 	private int numOnlineUsers;
 	private static List<ClientHandler> currentClients = new ArrayList<>();
 	private int numCurrentClients;
