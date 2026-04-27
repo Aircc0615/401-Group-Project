@@ -15,6 +15,20 @@ public class Message implements Serializable { //serialize takes the object and 
     protected Date date;
     protected Instant timeStamp;
     protected User user;
+    
+    private String username;
+    private String password;
+    private boolean success;
+    private int userId;
+    
+    private String chatList;
+    private String chatUserList;
+    private String chatId;
+    private String selectedUserId;
+    private String messageContent;
+    private String chatType;
+    private String memberList;
+    private String chatLog;
 
     public Message(){
         id = count++;
@@ -25,6 +39,20 @@ public class Message implements Serializable { //serialize takes the object and 
         date = new Date();
         timeStamp = Instant.now();
         user = null;
+        
+        username = "";
+        password = "";
+        success = false;
+        userId = -1;
+        
+        chatList = "";
+        chatUserList = "";
+        chatId = "";
+        selectedUserId = "";
+        messageContent = "";
+        chatType = "";
+        memberList = "";
+        chatLog = "";
     }
 
     public Message(MainType mainType, SubType subType, Status status, String text, User user){
@@ -36,6 +64,20 @@ public class Message implements Serializable { //serialize takes the object and 
         date = new Date();
         timeStamp = Instant.now();
         this.user = user;
+        
+        username = "";
+        password = "";
+        success = false;
+        userId = -1;
+        
+        chatList = "";
+        chatUserList = "";
+        chatId = "";
+        selectedUserId = "";
+        messageContent = "";
+        chatType = "";
+        memberList = "";
+        chatLog = "";
     }
 
     public MainType getType(){
@@ -65,4 +107,31 @@ public class Message implements Serializable { //serialize takes the object and 
 	public User getUser() {
 		return user;
 	}
+    
+    public int getCount() { return count; }
+    
+    public String getUsername() { return username; }
+
+    public String getPassword() { return password; }
+
+    public boolean getSuccess() { return success; }
+
+    public int getUserId() { return userId; }
+
+    public String getChatList() { return chatList; }
+
+    public String getChatUserList() { return chatUserList; }
+
+    public String getChatId() { return chatId; }
+
+    public String getSelectedUserId() { return selectedUserId; }
+
+    public String getMessageContent() { return messageContent; }
+
+    public String getChatType() { return chatType; }
+
+    public String getMemberList() { return memberList; }
+
+    public String getChatLog() { return chatLog; }
+    
 }

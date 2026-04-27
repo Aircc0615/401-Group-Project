@@ -1,4 +1,4 @@
-package test;
+package test.chat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
@@ -23,13 +23,29 @@ class TextMessageTest {
 		time = Instant.now();
 		textMessage = new TextMessage(text, username, userId, time);
 	}
+
 	@Test
 	void textMessageConstructor() {
 		assertNotNull(textMessage);
-		assertEquals(textMessage.getText().compareTo(text), 0);
+	}
+	
+	@Test
+	void getUsername() {
 		assertTrue(textMessage.getUsername().compareTo(username) == 0);
-		assertTrue(textMessage.getUserId() == userId);
-		assertTrue(textMessage.getTimestamp().compareTo(time) == 0);
 	}
 
+	@Test
+	void getUserId() {
+		assertTrue(textMessage.getUserId() == userId);
+	}
+
+	@Test
+	void getText() {
+		assertEquals(textMessage.getText().compareTo(text), 0);
+	}
+
+	@Test
+	void getTimestamp() {
+		assertTrue(textMessage.getTimestamp().compareTo(time) == 0);
+	}
 }
