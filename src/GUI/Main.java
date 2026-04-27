@@ -1,8 +1,11 @@
 import java.time.Instant;
 
-import src.chat.Chat;
-import src.chat.ChatType;
-import src.chat.TextMessage;
+import chat.Chat;
+import chat.ChatType;
+import chat.TextMessage;
+import user.User;
+
+
 
 public class Main {
 

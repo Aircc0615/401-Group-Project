@@ -4,11 +4,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 
-import src.chat.Chat;
-import src.chat.TextMessage;
+import chat.Chat;
+import user.User;
+
+
 
 public class GUI {
 	JFrame loginFrame;
@@ -109,31 +113,25 @@ public class GUI {
 		 
 		 mainFrame.setSize(750, 700);
 		 mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		 mainFrame.setLocationRelativeTo(null);
 		 
-		 createMainPanel();
-		 
+		 createLeftMainPanel();
+		 createRightMainPanel();
 		 mainFrame.setVisible(true);
 		 
 	 }
-	 public void createMainPanel() {
-		 
-		 //hold the scrollable list of contact + creating chats + viewing profile
+	 
+	 private void createLeftMainPanel() {
 		 JPanel leftPanel = new JPanel();
 		 leftPanel.setPreferredSize(new Dimension(250, 0));
 		 leftPanel.setBorder(BorderFactory.createTitledBorder("Left Panel"));	//for testin remove after 
-		 
-		 //hold the message for selected chat + sending chat + name of chat
-		 JPanel rightPanel = new JPanel();
-		 rightPanel.setBorder(BorderFactory.createTitledBorder("right Panel"));	//for testing remove after
-		 rightPanel.setLayout(new BoxLayout(rightPanel,BoxLayout.Y_AXIS ));
-		 
-		 //
-		 //left side
-		 //
+		
+		 //top
 		 JPanel addChatPanel = new JPanel();
 		 addChatPanel.setPreferredSize(new Dimension(240, 50));
 		 addChatPanel.setBorder(BorderFactory.createTitledBorder("addchatPanel"));
 		 
+		 //middle
 		 JScrollPane optionScrollPane = new JScrollPane();		//hold all the people user had message
 		 optionScrollPane.setBorder(BorderFactory.createTitledBorder("scroll Panel"));		//for testing
 		 optionScrollPane.setPreferredSize(new Dimension(240, 530));
@@ -161,17 +159,66 @@ public class GUI {
 		 optionScrollPane.setViewportView(chatListPanel);
 		 
 
+		 //bottom
 		 JPanel leftBottomPane = new JPanel();
-		 leftBottomPane.setBorder(BorderFactory.createTitledBorder("left bottom"));
 		 leftBottomPane.setPreferredSize(new Dimension(240, 50));
+		 leftBottomPane.setBackground(new Color(163, 177, 138));
 		 
-		 
-		 //
-		 //right side
-		 //
-		 
+		 JPanel textPanel = new JPanel();
+	     textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+	     textPanel.setPreferredSize(new Dimension(130, 40));
+	     textPanel.setOpaque(false);
+	     
+	     
+		 JLabel pic = new JLabel();
+	     pic.setPreferredSize(new Dimension(40, 30));
+	     pic.setBackground(new Color(255, 192, 203));
+	     pic.setOpaque(true);
+	     
+	     JLabel nameLabel = new JLabel(user.getUsername());	//pass in users name
+	     nameLabel.setForeground(Color.WHITE);
+	     nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD, 14f));
 
-		 msgScrollPane = new JScrollPane();
+	     JLabel subLabel = new JLabel("view pfp");
+	     subLabel.setForeground(Color.GRAY);
+	     subLabel.setFont(subLabel.getFont().deriveFont(12f));
+	     
+	     textPanel.add(nameLabel);
+	     textPanel.add(subLabel);
+	     
+	     leftBottomPane.add(pic, BorderLayout.WEST);
+	     leftBottomPane.add(textPanel, BorderLayout.CENTER);
+
+	     leftBottomPane.addMouseListener(new MouseAdapter() {
+	    	 public void mouseClicked(MouseEvent e) {
+	    		 createProfileFrame();
+	    	 }
+
+			 
+	     });
+	     
+	     
+	     
+	     
+	     
+	     leftPanel.add(addChatPanel);
+		 leftPanel.add(optionScrollPane);
+		 leftPanel.add(leftBottomPane);
+		 
+		 
+		 
+		 //adding to main frame
+		 mainFrame.add(leftPanel, BorderLayout.WEST);
+	     
+		 
+	 }
+	 
+	 private void createRightMainPanel() {
+		 JPanel rightPanel = new JPanel();
+		 rightPanel.setBorder(BorderFactory.createTitledBorder("right Panel"));	//for testing remove after
+		 rightPanel.setLayout(new BoxLayout(rightPanel,BoxLayout.Y_AXIS ));
+		 
+		 JScrollPane msgScrollPane = new JScrollPane();
 		 msgScrollPane.setBorder(BorderFactory.createTitledBorder("scroll Panel"));		//for testing
 		 msgScrollPane.setPreferredSize(new Dimension(10, 700));
 		 
@@ -196,15 +243,13 @@ public class GUI {
 		 rightPanel.add(msgScrollPane);
 		 rightPanel.add(rightBottomPanel);
 		 
-		 leftPanel.add(addChatPanel);
-		 leftPanel.add(optionScrollPane);
-		 leftPanel.add(leftBottomPane);
-		 
-		 //adding to main frame
-		 mainFrame.add(leftPanel, BorderLayout.WEST);
 		 mainFrame.add(rightPanel, BorderLayout.CENTER);
-		 
 	 }
+	 
+	 
+	 
+	 
+	 
 	 public void displayChat(Chat chat) {
 		 panel1.removeAll();
 		 
@@ -240,10 +285,12 @@ public class GUI {
 		 panel1.repaint();
 		 
 	}
-	 
-
-	 
-
 	
-	
+	 private void createProfileFrame() {
+		JFrame profileFrame = new JFrame();
+		
+		mainFrame.setVisible(false);
+		profileFrame.setVisible(true);
+			
+	}
 }
