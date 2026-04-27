@@ -3,6 +3,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
 
+import user.User;
+
 public class Message implements Serializable { //serialize takes the object and converts into stream of bytes
     private static int count = 0;
     private int id;
@@ -12,6 +14,7 @@ public class Message implements Serializable { //serialize takes the object and 
     protected String text;
     protected Date date;
     protected Instant timeStamp;
+    protected User user;
     
     private String username;
     private String password;
@@ -35,6 +38,7 @@ public class Message implements Serializable { //serialize takes the object and 
         this.text = "Undefined";
         date = new Date();
         timeStamp = Instant.now();
+        user = null;
         
         username = "";
         password = "";
@@ -51,7 +55,7 @@ public class Message implements Serializable { //serialize takes the object and 
         chatLog = "";
     }
 
-    public Message(MainType mainType, SubType subType, Status status, String text){
+    public Message(MainType mainType, SubType subType, Status status, String text, User user){
         id = count++;
         this.mainType = mainType;
         this.subType = subType;
@@ -59,6 +63,7 @@ public class Message implements Serializable { //serialize takes the object and 
         this.text = text;
         date = new Date();
         timeStamp = Instant.now();
+        this.user = user;
         
         username = "";
         password = "";
@@ -98,6 +103,10 @@ public class Message implements Serializable { //serialize takes the object and 
     public Date getDate() { return date; }
 
     public Instant getTimeStamp() { return timeStamp; }
+
+	public User getUser() {
+		return user;
+	}
     
     public int getCount() { return count; }
     
