@@ -205,9 +205,14 @@ public class User implements Serializable {
       if(hasUnreadChat(chat)==true){
         return;
       }
-      unreadChatList.addChat(chat);
+      markChatAsUnread(chat.getChatId());
     }
 
+   
+    
+    public void markChatAsUnread(int chatId) {
+    	chatList.insertChatToOneList(unreadChatList, chatId);
+    }
     
     
     
