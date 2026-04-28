@@ -2,6 +2,8 @@ package chat;
 
 import java.time.Instant;
 
+import src.chat.Chat;
+
 //might need to add a semaphore for addchat/deletechat synchronization
 public class ChatList {
 	private Chat[] chats;
@@ -242,5 +244,13 @@ public class ChatList {
 			}
 		}
 		return -1;
+	}
+	
+	//helper
+	public int getNumChat() {
+		return numChats;
+	}
+	public Chat getChat(int chatIndex) {
+		return chats[chatIndex];
 	}
 }

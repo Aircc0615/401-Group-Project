@@ -1,3 +1,5 @@
+package GUI;
+
 import java.time.Instant;
 
 import chat.Chat;
@@ -51,8 +53,9 @@ public class Main {
 	    user1.getChatList().addChat(chat3);
 
 	    
-
-	    new GUI(user1);
+	    javax.swing.SwingUtilities.invokeLater(() -> {
+	    	new GUI(user1); 
+        });
 	}
 	
 

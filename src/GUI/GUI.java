@@ -1,3 +1,6 @@
+package GUI;
+
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -95,14 +98,19 @@ public class GUI {
 	 public void verifyLogin(String username, String password) {
 		 System.out.println("verifying");
 		 
-//		 isLogged = user.authenticateLogin(username, password);
-//		 System.out.println(isLogged);
-//		 System.out.println(username + "\n"+ password);
-//		 
-//		 if(!isLogged) {
-//			 JOptionPane.showMessageDialog(loginFrame, "Login failed");
-//			 return;
-//		 }
+		 /*
+		 User user = new User(username, password);
+		 
+		 isLogged = client.login(user, .....);
+		 isLogged = user.authenticateLogin(username, password);
+		 System.out.println(isLogged);
+		 System.out.println(username + "\n"+ password);
+		 
+		 if(!isLogged) {
+			 JOptionPane.showMessageDialog(loginFrame, "Login failed");
+			 return;
+		 }
+		 */
 		 loginFrame.dispose();
 		 createMainFrame();
 		 
@@ -113,7 +121,7 @@ public class GUI {
 		 
 		 mainFrame.setSize(750, 700);
 		 mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		 mainFrame.setLocationRelativeTo(null);
+		 //mainFrame.setLocationRelativeTo(null);
 		 
 		 createLeftMainPanel();
 		 createRightMainPanel();
@@ -191,7 +199,7 @@ public class GUI {
 
 	     leftBottomPane.addMouseListener(new MouseAdapter() {
 	    	 public void mouseClicked(MouseEvent e) {
-	    		 createProfileFrame();
+	    		 createProfileMenu().show(leftBottomPane, e.getX(), e.getY());
 	    	 }
 
 			 
@@ -286,11 +294,22 @@ public class GUI {
 		 
 	}
 	
-	 private void createProfileFrame() {
-		JFrame profileFrame = new JFrame();
+	 private JPopupMenu createProfileMenu() {
+		JPopupMenu profile = new JPopupMenu();
+		//JMenuItem myProfile = new JMenuItem("My Profile"); //add if have time
+	    JMenuItem audit = new JMenuItem("Audit Mode");
+	    JMenuItem logout = new JMenuItem("Logout");
+	    
+		//myProfile.addActionListener(e -> openProfilePage());
+		//audit.addActionListener(e -> openSettingsPage());
+		//logout.addActionListener(e -> logoutUser());
 		
-		mainFrame.setVisible(false);
-		profileFrame.setVisible(true);
-			
+		//profile.add(myProfile);
+	    //if(user.isI));
+	    profile.add(audit);
+	    profile.addSeparator();
+	    profile.add(logout);
+		
+		return profile;
 	}
 }
