@@ -153,6 +153,26 @@ public class ChatList {
 		}
 	}
 
+	public void deleteChat(int chatId, boolean isBuffer) {
+		synchronized (writeMutex) {
+			if(!isBuffer)
+				return;
+			Chat[] tempChats = getCopyOfChats();
+			int indexInArray = parseId(tempChats, chatId);
+			if (indexInArray == -1) {
+				return; // Do nothing if not in array
+			}
+			// confirm that the user is the chat owner in a group chat
+			Chat chat = tempChats[indexInArray];
+			// remove the chat
+			for (int i = indexInArray; i < (numChats - 1); i++) {
+				tempChats[i] = tempChats[i + 1]; // shift array down 1
+			}
+			chats = tempChats;
+			numChats--; // decrement numchats
+		}
+	}
+
 	// returns a string of all chat ids in the list separated by ','
 	public String toString() {
 		String retStr = "";

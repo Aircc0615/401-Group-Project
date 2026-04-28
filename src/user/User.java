@@ -175,16 +175,16 @@ public class User implements Serializable {
     
     
     
-    public void removeChat(Chat chat) {
+    public void removeChat(Chat chat, int fromUserId) {
         if(chat == null){
             return;
         }
-        removeChat(chat.getChatId());
+        removeChat(chat.getChatId(), fromUserId);
     }
 
-    public void removeChat(int chatId) {
-        chatList.deleteChat(chatId,this.id);
-        unreadChatList.deleteChat(chatId, this.id);
+    public void removeChat(int chatId, int fromUserId) {
+        chatList.deleteChat(chatId, fromUserId);
+        unreadChatList.deleteChat(chatId, true);
     }
 
     
@@ -221,7 +221,7 @@ public class User implements Serializable {
     }
 
      public void markChatAsRead(int chatId) {
-        unreadChatList.deleteChat(chatId,this.id);
+        unreadChatList.deleteChat(chatId, true);
     }
 
     
@@ -250,18 +250,16 @@ public class User implements Serializable {
         return containsChat(unreadChatList,chatId);
     }
     
-    public void removeChatMember(Chat chat,User member){
+    public void removeChatMember(Chat chat,User member,int fromUserId){
         if(chat == null || member == null){
             return;
         }
 
-        removeChatMember(chat.getChatId(), member.getId());
+        removeChatMember(chat.getChatId(), member.getId(), fromUserId);
     }
 
-    public void removeChatMember(int chatId, int memberId){
-        chatList.removeChatMember(chatId,memberId,this.id);
-        unreadChatList.removeChatMember(chatId,memberId,this.id);
-        
+    public void removeChatMember(int chatId, int memberId, int fromUserId){
+        chatList.removeChatMember(chatId,memberId,fromUserId);
     }
     
     
