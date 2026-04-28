@@ -2,12 +2,13 @@ package user;
 
 import java.io.Serializable;
 import java.util.Date;
+import chat.Chat;
+import chat.ChatList;
 
 public class User implements Serializable {
 	private static int count = 0;
     private static final int minLength= 6;
     private static final int maxLength = 20;
-    private static final int maxChats = 100;
 
     private int id;
     private String username;
@@ -17,10 +18,9 @@ public class User implements Serializable {
     private boolean auditMode;
     private String sessionToken;
     private Date lastLogin;
-    private int[] chatIds;
-    private int chatCount;
-    private int[] unreadChatIds;
-    private int unreadChatCount;
+    
+    private ChatList chatList;
+    private ChatList unreadChatList;
 
     public User() {
         this.id = count++;
@@ -31,10 +31,8 @@ public class User implements Serializable {
         this.auditMode = false;
         this.sessionToken = "";
         this.lastLogin = null;
-        this.chatIds = new int[maxChats];
-        this.chatCount = 0;
-        this.unreadChatIds = new int[maxChats];
-        this.unreadChatCount = 0;
+        this.chatList = new ChatList();
+        this.unreadChatList = new ChatList();
     }
 
     public User(String username, String password) {
@@ -46,10 +44,8 @@ public class User implements Serializable {
         this.auditMode = false;
         this.sessionToken = "";
         this.lastLogin = null;
-        this.chatIds = new int[maxChats];
-        this.chatCount = 0;
-        this.unreadChatIds = new int[maxChats];
-        this.unreadChatCount = 0;
+        this.chatList = new ChatList();
+        this.unreadChatList = new ChatList();
     }
 
     public User(String username, String password, boolean isITUser) {
@@ -61,10 +57,8 @@ public class User implements Serializable {
         this.auditMode = false;
         this.sessionToken = "";
         this.lastLogin = null;
-        this.chatIds = new int[maxChats];
-        this.chatCount = 0;
-        this.unreadChatIds = new int[maxChats];
-        this.unreadChatCount = 0;
+        this.chatList = new ChatList();
+        this.unreadChatList = new ChatList();
     }
 
     
@@ -133,20 +127,19 @@ public class User implements Serializable {
     
     
     
-    public boolean ViewChat(int chatId) {
-        int i;
+    public boolean ViewChat(Chat chat) {
+        if(chat == null){
+            return false;
+        }
 
+       
+       
         if (isITUser == true && auditMode == true) {
             return true;
         }
 
-        for (i = 0; i < chatCount; i++) {
-            if (chatIds[i] == chatId) {
-                return true;
-            }
-        }
 
-        return false;
+        return hasChat(chat);
     }
 
     
@@ -156,57 +149,42 @@ public class User implements Serializable {
     
     
     
-    public void addChat(int chatId) {
-        int i;
-
-        for (i = 0; i < chatCount; i++) {
-            if (chatIds[i] == chatId) {
-                return;
-            }
+    public boolean hasChat(Chat chat) {
+        if(chat == null){
+            return false;
         }
 
-        if (chatCount < maxChats) {
-            chatIds[chatCount] = chatId;
-            chatCount++;
-        }
+        return hasChat(chat.getChatId());
+    }
+
+    public boolean hasChat(int chatId){
+        return containsChat(chatList,chatId);
     }
 
    
-    
-    
-    
-    
-    
-    public void removeChat(int chatId) {
-        removeChatFrom(chatIds, chatId, true);
-        removeChatFrom(unreadChatIds, chatId, false);
-    }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    public void markChatAsUnread(int chatId) {
-        int i;
-
-        if (ViewChat(chatId)==false) {
+    public void addChat(Chat chat){
+        if(chat == null){
             return;
         }
-
-        for (i = 0; i < unreadChatCount; i++) {
-            if (unreadChatIds[i] == chatId) {
-                return;
-            }
+        if(hasChat(chat)==true){
+            return;
         }
-
-        if (unreadChatCount < maxChats) {
-            unreadChatIds[unreadChatCount] = chatId;
-            unreadChatCount++;
+        chatList.addChat(chat);
+    }
+    
+    
+    
+    
+    public void removeChat(Chat chat) {
+        if(chat == null){
+            return;
         }
+        removeChat(chat.getChatId());
+    }
+
+    public void removeChat(int chatId) {
+        chatList = rebuildChat(chatList,chatId);
+        unreadChatList = rebuildChat(unreadChatList,chatId);
     }
 
     
@@ -214,8 +192,36 @@ public class User implements Serializable {
     
     
     
-    public void markChatAsRead(int chatId) {
-        removeChatFrom(unreadChatIds, chatId, false);
+    
+    
+    
+    public void markChatAsUnread(Chat chat) {
+      if(chat==null){
+        return;
+      }
+      if(ViewChat(chat)==false){
+        return;
+      }
+      if(hasUnreadChat(chat)==true){
+        return;
+      }
+      unreadChatList.addChat(chat);
+    }
+
+    
+    
+    
+    
+    
+    public void markChatAsRead(Chat chat) {
+        if(chat == null){
+            return;
+        }
+        markChatAsRead(chat.getChatId());
+    }
+
+     public void markChatAsRead(int chatId) {
+        unreadChatList = rebuildChat(unreadChatList,chatId);
     }
 
     
@@ -223,7 +229,7 @@ public class User implements Serializable {
     
     
     public boolean hasUnreadMessages() {
-        return unreadChatCount > 0;
+        return getUnreadChatCount() > 0;
     }
 
    
@@ -232,18 +238,17 @@ public class User implements Serializable {
     
     
     
-    public boolean hasUnreadChat(int chatId) {
-        int i;
-
-        for (i = 0; i < unreadChatCount; i++) {
-            if (unreadChatIds[i] == chatId) {
-                return true;
-            }
+    public boolean hasUnreadChat(Chat chat) {
+        if(chat == null){
+            return false;
         }
 
-        return false;
+        return hasUnreadChat(chat.getChatId());
     }
 
+    public boolean hasUnreadChat(int chatId) {
+        return containsChat(unreadChatList,chatId);
+    }
     
     
     
@@ -285,35 +290,53 @@ public class User implements Serializable {
     
     
     
-    
-    private void removeChatFrom(int[] array, int chatId, boolean chatType) {
+    private boolean containsChat(ChatList list, int chatId){
+        int size = getChatListSize(list);
         int i;
-        int limit;
+        Chat chat;
+        for(i = 0; i < size; i++){
+            chat = list.getChat(i);
 
-        if (chatType == true) {
-            limit = chatCount;
-        } else {
-            limit = unreadChatCount;
-        }
-
-        for (i = 0; i < limit; i++) {
-            if (array[i] == chatId) {
-                while (i < limit - 1) {
-                    array[i] = array[i + 1];
-                    i++;
-                }
-
-                array[limit - 1] = 0;
-
-                if (chatType == true) {
-                    chatCount--;
-                } else {
-                    unreadChatCount--;
-                }
-
-                return;
+            if(chat !=null && chat.getChatId()==chatId){
+                return true;
             }
         }
+        return false;
+    }
+
+
+    private ChatList rebuildChat(ChatList oldList, int chatIdToRemove){
+        ChatList newList = new ChatList();
+        int size = getChatListSize(oldList);
+        int i;
+        Chat chat;
+
+        for(i = 0; i < size; i++){
+            chat = oldList.getChat(i);
+            if(chat != null && chat.getChatId() != chatIdToRemove){
+                newList.addChat(chat);
+            }
+
+        }
+        return newList;
+    }
+
+
+
+    private int getChatListSize(ChatList list){
+        String chatIds;
+
+
+        if(list == null){
+            return 0;
+        }
+
+        chatIds = list.toString();
+
+        if(chatIds == null || chatIds.length() == 0){
+            return 0;
+        }
+        return chatIds.split(",").length;
     }
 
   
@@ -364,34 +387,23 @@ public class User implements Serializable {
         return "USER";
     }
 
-    public int[] getChats() {
-        int[] chats = new int[chatCount];
-        int i;
-
-        for (i = 0; i < chatCount; i++) {
-            chats[i] = chatIds[i];
-        }
-
-        return chats;
+    public ChatList getChatList() {
+        return this.chatList;
     }
 
-    public int getChatCount() {
-        return this.chatCount;
+
+    public ChatList getUnreadChatList() {
+        return this.unreadChatList;
     }
 
-    public int[] getUnreadChats() {
-        int[] chats = new int[unreadChatCount];
-        int i;
-
-        for (i = 0; i < unreadChatCount; i++) {
-            chats[i] = unreadChatIds[i];
-        }
-
-        return chats;
+    public int getChatCount(){
+        return getChatListSize(chatList);
     }
+
+
 
     public int getUnreadChatCount() {
-        return this.unreadChatCount;
+        return getChatListSize(unreadChatList);
     }
 
     public void setUsername(String username) {
