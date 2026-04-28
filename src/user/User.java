@@ -183,8 +183,8 @@ public class User implements Serializable {
     }
 
     public void removeChat(int chatId) {
-        chatList = rebuildChat(chatList,chatId);
-        unreadChatList = rebuildChat(unreadChatList,chatId);
+        chatList.deleteChat(chatId,this.id);
+        unreadChatList.deleteChat(chatId, this.id);
     }
 
     
@@ -221,7 +221,7 @@ public class User implements Serializable {
     }
 
      public void markChatAsRead(int chatId) {
-        unreadChatList = rebuildChat(unreadChatList,chatId);
+        unreadChatList.deleteChat(chatId,this.id);
     }
 
     
@@ -250,6 +250,19 @@ public class User implements Serializable {
         return containsChat(unreadChatList,chatId);
     }
     
+    public void removeChatMember(Chat chat,User member){
+        if(chat == null || member == null){
+            return;
+        }
+
+        removeChatMember(chat.getChatId(), member.getId());
+    }
+
+    public void removeChatMember(int chatId, int memberId){
+        chatList.removeChatMember(chatId,memberId,this.id);
+        unreadChatList.removeChatMember(chatId,memberId,this.id);
+        
+    }
     
     
     
@@ -291,53 +304,27 @@ public class User implements Serializable {
     
     
     private boolean containsChat(ChatList list, int chatId){
-        int size = getChatListSize(list);
+        int[] chatIds;
         int i;
-        Chat chat;
-        for(i = 0; i < size; i++){
-            chat = list.getChat(i);
 
-            if(chat !=null && chat.getChatId()==chatId){
+        if (list == null) {
+            return false;
+        }
+
+        chatIds = list.getChatIds();
+
+        for (i = 0; i < chatIds.length; i++) {
+            if (chatIds[i] == chatId) {
                 return true;
             }
         }
+
         return false;
     }
 
-
-    private ChatList rebuildChat(ChatList oldList, int chatIdToRemove){
-        ChatList newList = new ChatList();
-        int size = getChatListSize(oldList);
-        int i;
-        Chat chat;
-
-        for(i = 0; i < size; i++){
-            chat = oldList.getChat(i);
-            if(chat != null && chat.getChatId() != chatIdToRemove){
-                newList.addChat(chat);
-            }
-
-        }
-        return newList;
-    }
+    
 
 
-
-    private int getChatListSize(ChatList list){
-        String chatIds;
-
-
-        if(list == null){
-            return 0;
-        }
-
-        chatIds = list.toString();
-
-        if(chatIds == null || chatIds.length() == 0){
-            return 0;
-        }
-        return chatIds.split(",").length;
-    }
 
   
     
@@ -397,13 +384,13 @@ public class User implements Serializable {
     }
 
     public int getChatCount(){
-        return getChatListSize(chatList);
+        return chatList.getChatIds().length;
     }
 
 
 
     public int getUnreadChatCount() {
-        return getChatListSize(unreadChatList);
+        return unreadChatList.getChatIds().length;
     }
 
     public void setUsername(String username) {
