@@ -151,4 +151,8 @@ public class Chat {
 		}
 		return retStr;
 	}
+	
+	public int getNumMessages() {
+		return numMessages;
+	}
 }
