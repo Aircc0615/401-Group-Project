@@ -25,19 +25,13 @@ class ChatListTest {
 	void chatListAddChat() {
 		Chat chat = new Chat(creatorId, groupIds, ChatType.GROUP);
 		chatList.addChat(chat);
-		assertSame(chat, chatList.getChat(0));
+		assertEquals(chatList.toString(), Integer.toString(chat.getChatId()));
 	}
 
 	@Test
 	void chatListInvalidChatIndex() {
 		assertThrows(IndexOutOfBoundsException.class,
-				() -> chatList.getChat(0));
-	}
-
-	@Test
-	void chatListNegativeChatIndex() {
-		assertThrows(IndexOutOfBoundsException.class,
-				() -> chatList.getChat(-1));
+				() -> chatList.getChatNewestUpdate(-1));
 	}
 
 	@Test
@@ -48,10 +42,12 @@ class ChatListTest {
 		chatList.addChat(chat2);
 		chatList.addChat(chat1);
 		chatList.addChat(chat3);
-		assertAll(
-				() -> assertSame(chatList.getChat(0), chat3),
-				() -> assertSame(chatList.getChat(1), chat2),
-				() -> assertSame(chatList.getChat(2), chat1));
+		int[] orderArray = new int[3];
+		orderArray[0] = chat3.getChatId();
+		orderArray[1] = chat2.getChatId();
+		orderArray[2] = chat1.getChatId();
+		int[] returnArray = chatList.getChatIds();
+		assertArrayEquals(orderArray, returnArray);
 	}
 
 	@Test
@@ -59,8 +55,9 @@ class ChatListTest {
 		Chat chat = new Chat(creatorId, groupIds, ChatType.GROUP);
 		chatList.addChat(chat);
 		chatList.addChat(chat);
+		chatList.deleteChat(chat.getChatId(), creatorId);
 		assertThrows(IndexOutOfBoundsException.class,
-				() -> chatList.getChat(1));
+				() -> chatList.getChatNewestUpdate(chat.getChatId()));
 	}
 
 	@Test
@@ -75,15 +72,15 @@ class ChatListTest {
 		chatList.addChat(chat3);
 		chatList.addChat(chat4);
 		chatList.addChat(chat5);
-		chatList.addChatMessage(3, new TextMessage("test", "test_user", 1));
+		int[] startingIds = chatList.getChatIds();
+		chatList.addChatMessage(chat2.getChatId(), new TextMessage("test", "test_user", 1));
+		int[] modifiedIds = chatList.getChatIds();
 		assertAll(
-				() -> {
-					for(int i = 0; i < 4; i++) {
-						assertTrue(chatList.getChat(0).getNewestUpdate()
-								.compareTo(chatList.getChat(i+1).getNewestUpdate()) >= 0);
-					}
-				}
-				);
+				() -> assertEquals(startingIds[0], modifiedIds[1]),
+				() -> assertEquals(startingIds[1], modifiedIds[2]),
+				() -> assertEquals(startingIds[2], modifiedIds[3]),
+				() -> assertEquals(startingIds[3], modifiedIds[0]),
+				() -> assertEquals(startingIds[4], modifiedIds[4]));
 	}
 
 	@Test
@@ -93,8 +90,9 @@ class ChatListTest {
 		chatList.addChat(chat1);
 		chatList.addChat(chat2);
 
-		chatList.deleteChat(0, creatorId);;
+		chatList.deleteChat(chat1.getChatId(), creatorId);;
 
-		assertSame(chat2, chatList.getChat(0));
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> chatList.getChatNewestUpdate(chat1.getChatId()));
 	}
 }

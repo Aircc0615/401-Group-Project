@@ -18,7 +18,11 @@ public class ChatList {
 	// inserts a chat in the array based on the order of the timestamp
 	public void addChat(Chat chat) {
 		synchronized (writeMutex) {
+			int chatId = chat.getChatId();
 			Chat[] tempChats = getCopyOfChats();
+			int chatIndex = parseId(tempChats, chatId);
+			if(chatIndex != -1)
+				return;
 			// makes more space if needed (2x)
 			if (numChats >= tempChats.length) {
 				Chat[] newChats = new Chat[tempChats.length * 2];
