@@ -17,6 +17,7 @@ public class Main {
 	    User user3 = new User("moooon", "moooon");
 	    User user4 = new User("bloom14", "bloom14");
 
+	    user1.setITUser(true);
 	    Chat chat1 = new Chat(
 	        user1.getId(),
 	        new int[]{user1.getId(), user2.getId()},
