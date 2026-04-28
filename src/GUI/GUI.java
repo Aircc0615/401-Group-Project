@@ -20,8 +20,8 @@ import user.User;
 public class GUI {
 	JFrame loginFrame;
 	JFrame mainFrame;
-	//Login login;
 	boolean isLogged = false;
+	boolean auditMode = false;
 	User user;
 	JScrollPane msgScrollPane; 
 	JTextArea textArea;
@@ -127,6 +127,9 @@ public class GUI {
 		 createRightMainPanel();
 		 mainFrame.setVisible(true);
 		 
+		 mainFrame.revalidate();
+		 mainFrame.repaint();
+		 
 	 }
 	 
 	 private void createLeftMainPanel() {
@@ -138,6 +141,11 @@ public class GUI {
 		 JPanel addChatPanel = new JPanel();
 		 addChatPanel.setPreferredSize(new Dimension(240, 50));
 		 addChatPanel.setBorder(BorderFactory.createTitledBorder("addchatPanel"));
+		 
+		 
+		 
+		 
+		 
 		 
 		 //middle
 		 JScrollPane optionScrollPane = new JScrollPane();		//hold all the people user had message
@@ -226,6 +234,14 @@ public class GUI {
 		 rightPanel.setBorder(BorderFactory.createTitledBorder("right Panel"));	//for testing remove after
 		 rightPanel.setLayout(new BoxLayout(rightPanel,BoxLayout.Y_AXIS ));
 		 
+		 
+		 //top
+		 JPanel topRightPanel = new JPanel();
+		 //topRightPanel.setLayout(new BoxLayout(topRightPanel, BoxLayout.Y_AXIS));
+		 topRightPanel.setBorder(BorderFactory.createTitledBorder("top"));
+		 topRightPanel.setPreferredSize(new Dimension(500, 50));
+		 
+		 //middle
 		 JScrollPane msgScrollPane = new JScrollPane();
 		 msgScrollPane.setBorder(BorderFactory.createTitledBorder("scroll Panel"));		//for testing
 		 msgScrollPane.setPreferredSize(new Dimension(10, 700));
@@ -238,16 +254,22 @@ public class GUI {
 		 
 		 msgScrollPane.setViewportView(panel1);
 		 
-		 
-		 
-		 JTextField inputField = new JTextField();
-		 JButton sendButton = new JButton("Send");
-
-		 
 		 JPanel rightBottomPanel = new JPanel(new BorderLayout());
-		 rightBottomPanel.add(inputField, BorderLayout.CENTER);
-		 rightBottomPanel.add(sendButton, BorderLayout.EAST);
 		 
+		 //bottom
+		 if(auditMode == true) {
+			 JButton exportButton = new JButton("Export");
+			 rightBottomPanel.add(exportButton);
+			 System.out.println("enter audit mode");
+		 }else {
+			 JTextField inputField = new JTextField();
+			 JButton sendButton = new JButton("Send");
+
+			 rightBottomPanel.add(inputField, BorderLayout.CENTER);
+			 rightBottomPanel.add(sendButton, BorderLayout.EAST);
+		 }
+		 
+		 rightPanel.add(topRightPanel);
 		 rightPanel.add(msgScrollPane);
 		 rightPanel.add(rightBottomPanel);
 		 
@@ -298,18 +320,45 @@ public class GUI {
 		JPopupMenu profile = new JPopupMenu();
 		//JMenuItem myProfile = new JMenuItem("My Profile"); //add if have time
 	    JMenuItem audit = new JMenuItem("Audit Mode");
+	    JMenuItem exitAudit = new JMenuItem("Exit Audit Mode");
 	    JMenuItem logout = new JMenuItem("Logout");
 	    
 		//myProfile.addActionListener(e -> openProfilePage());
-		//audit.addActionListener(e -> openSettingsPage());
-		//logout.addActionListener(e -> logoutUser());
+		audit.addActionListener(e -> {
+			auditMode = true;
+			createMainFrame();
+		});
+		
+		exitAudit.addActionListener(e -> {
+			auditMode = false;
+			createMainFrame();
+		});
+		
+		logout.addActionListener(e -> {
+			auditMode = false;
+			logoutUser();
+		
+		});
 		
 		//profile.add(myProfile);
-	    //if(user.isI));
-	    profile.add(audit);
-	    profile.addSeparator();
+	    if(user.getRole().equals("IT")) {
+	    	if(auditMode == false) {
+	    		profile.add(audit);
+			    profile.addSeparator();
+	    	}else {
+	    		profile.add(exitAudit);
+	    		profile.addSeparator();
+	    	}
+	    }
 	    profile.add(logout);
+	    
 		
 		return profile;
 	}
+	 private void logoutUser() {
+		 //to do
+	 }
+	 
+	 
+	
 }
