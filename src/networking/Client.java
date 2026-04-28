@@ -90,9 +90,10 @@ public class Client {
     	
     	Socket clientSideSocket = connectToServer();
 
-        System.out.println("Enter Login!");
+        System.out.println("Please enter your username!");
 		String username = sin.nextLine();
-        String password = sin.nextLine();;
+		System.out.println("Please enter your password!");
+        String password = sin.nextLine();
         User user = new User(username, password);
         
         boolean authenticatedUser = login(user, objectOutputStream, clientSideSocket);

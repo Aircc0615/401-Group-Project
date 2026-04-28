@@ -7,16 +7,18 @@ import java.util.List;
 import java.util.HashMap;
 import chat.ChatList;
 import user.User;
+import user.UserLoginModule;
 
 public class Server {
-	private User[] users;
+	private List<User> users = new ArrayList<>();
 	private int numUsers;
 	private ChatList chats;
-	private User[] onlineUsers;
+	private List<User> onlineUsers = new ArrayList<>();
 	private int numOnlineUsers;
 	private static List<ClientHandler> currentClients = new ArrayList<>();
 	private int numCurrentClients;
-	private HashMap<Integer, ClientHandler> mapIdtoClient; //int is id
+	private HashMap<Integer, ClientHandler> mapIdtoClient; //int is id, at the moment not being used but could be use for more efficient message routing
+	private UserLoginModule userLoginModule = new UserLoginModule(users); 
 	
 	
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -50,29 +52,27 @@ public class Server {
 
     }
     
+    public boolean authenticateUser(User userToAuthenticate) {
+    	return userLoginModule.authenticateUser(userToAuthenticate);
+    }
+    
+    public void createNewUser() {
+    	userLoginModule.createNewUser();
+    }
+    
     public void sendToClients(List<Message> messages) throws IOException {
     	for(ClientHandler client: currentClients) {
     		client.sendToClient(messages);
     	}
     }
    
-    public void addUser(User user) {
+    public void addUserToGroupChat(User user) {
     	
     }
     
 
    
 
-	private void failedLoginAttempt() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	private void successfulLogin(ObjectOutputStream objectOutputStream, List<Message> messageList) {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 

@@ -13,6 +13,7 @@ public class ClientHandler implements Runnable{
     private final Socket clientSocket;
     private int userId;
     private Server server;
+    private static List<Message> messageList = new ArrayList<>();
     
     ObjectInputStream objectInputStream;
     ObjectOutputStream objectOutputStream;
@@ -33,7 +34,7 @@ public class ClientHandler implements Runnable{
             OutputStream outputStream = clientSocket.getOutputStream();
             objectOutputStream = new ObjectOutputStream(outputStream); //this allows us to send stuff out to the client
 
-            List<Message> messageList = new ArrayList<>();
+            
             Message message = (Message) objectInputStream.readObject(); //incoming message from client gets deserialized
             messageList.add(message); //add the client message to the array of messages on the server side
 
@@ -65,21 +66,33 @@ public class ClientHandler implements Runnable{
     }
 
   //helper functions
-    public void successfulLogin(List<Message> messageList) throws IOException {
+    public void successfulLogin() throws IOException {
         Message loginSuccess = new Message(MainType.AUTHENTICATION, SubType.LOGIN_RESPONSE , Status.SUCCESS, "Login successful", null); //create a login success message to send to the user
         objectOutputStream.writeObject(loginSuccess); //sends back the successful login message
         messageList.add(loginSuccess); //login message that is sent out from server to client gets added to the array
     }
     
-    public void failedLoginAttempt(){
-        System.out.println("");
+    public void failedLoginAttempt() throws IOException{
+    	Message loginFailed = new Message(MainType.AUTHENTICATION, SubType.LOGIN_RESPONSE , Status.SUCCESS, "Invalid username/password. Please try again.", null); //create a login success message to send to the user
+        objectOutputStream.writeObject(loginFailed); //sends back the successful login message
+        messageList.add(loginFailed); //login message that is sent out from server to client gets added to the array
     }
     
     public boolean performAuthenticationOperation(Socket clientSocket, InputStream clientInputStream, Message message, List<Message> messageList) throws IOException {
         //if the login is successful we perform the next step, otherwise we send a failed response
         if(message.subType == SubType.LOGIN) {
-            successfulLogin(messageList); //this function at the moment just sends the user a successful login response message and adds the message to our message list array
-			return true; //if successful/this needs to be changed if false but for the current version set to true
+        	successfulLogin(); //at the moment the code will always send a successful respondse
+        	return true;
+        	/* this works but the client doesnt support creating new users just yet
+            boolean authenticated = server.authenticateUser(message.getUser());
+        	if(authenticated) {
+        		successfulLogin(); //this function at the moment just sends the user a successful login response message and adds the message to our message list array
+				return true; //if successful/this needs to be changed if false but for the current version set to true
+        	}
+	        else {
+	        	failedLoginAttempt();
+	        }
+	        */
         }
 
         //this could be moved into its own function, i just have it here since it was listed as a subtype, i assumed it was associated to our authentication module but
