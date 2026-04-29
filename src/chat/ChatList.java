@@ -2,7 +2,7 @@ package chat;
 
 import java.time.Instant;
 
-import src.chat.Chat;
+
 
 //might need to add a semaphore for addchat/deletechat synchronization
 public class ChatList {

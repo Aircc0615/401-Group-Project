@@ -99,7 +99,9 @@ public class GUI {
 		 System.out.println("verifying");
 		 
 		 /*
-		 User user = new User(username, password);
+		 User tempUser = new User(username, password);
+		 
+		 User user = client.login(tempUser);
 		 
 		 isLogged = client.login(user, .....);
 		 isLogged = user.authenticateLogin(username, password);
@@ -135,28 +137,49 @@ public class GUI {
 	 private void createLeftMainPanel() {
 		 JPanel leftPanel = new JPanel();
 		 leftPanel.setPreferredSize(new Dimension(250, 0));
-		 leftPanel.setBorder(BorderFactory.createTitledBorder("Left Panel"));	//for testin remove after 
+		 leftPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
 		 //top
+		 
 		 JPanel addChatPanel = new JPanel();
 		 addChatPanel.setPreferredSize(new Dimension(240, 50));
-		 addChatPanel.setBorder(BorderFactory.createTitledBorder("addchatPanel"));
+		 addChatPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		 addChatPanel.setLayout(new BoxLayout( addChatPanel, BoxLayout.X_AXIS));
 		 
 		 
+		 
+		 JLabel newChatLabel = new JLabel("               Create New Chat" );
+		 
+		 
+		 newChatLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		 newChatLabel.setOpaque(true);  
+		 newChatLabel.setBackground(new Color(163, 177, 138));
+		 newChatLabel.setPreferredSize(new Dimension(240, 40));
+		 newChatLabel.setMaximumSize(newChatLabel.getPreferredSize());
+		 
+		 newChatLabel.addMouseListener(new MouseAdapter() {
+			 public void mouseClicked(MouseEvent e) {
+				 createNewChatOption().show(addChatPanel, e.getX(), e.getY());
+			    }
+		 });
+		 
+		 
+		 
+		 addChatPanel.add(newChatLabel);
 		 
 		 
 		 
 		 
 		 //middle
 		 JScrollPane optionScrollPane = new JScrollPane();		//hold all the people user had message
-		 optionScrollPane.setBorder(BorderFactory.createTitledBorder("scroll Panel"));		//for testing
+		 optionScrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK));	//for testing
 		 optionScrollPane.setPreferredSize(new Dimension(240, 530));
 		 
 		 //display chatList
 		 
 		 JPanel chatListPanel = new JPanel();
 		 chatListPanel.setLayout(new BoxLayout(chatListPanel, BoxLayout.Y_AXIS));
-		 chatListPanel.setBorder(BorderFactory.createTitledBorder("right Panel"));
+		 //chatListPanel.setBorder(BorderFactory.createTitledBorder("right Panel"));
 		 
 		 for (int i = 0; i < user.getChatList().getNumChat(); i++) {
 			    Chat chat = user.getChatList().getChat(i);
@@ -207,7 +230,7 @@ public class GUI {
 
 	     leftBottomPane.addMouseListener(new MouseAdapter() {
 	    	 public void mouseClicked(MouseEvent e) {
-	    		 createProfileMenu().show(leftBottomPane, e.getX(), e.getY());
+	    		 createNewChatOption().show(leftBottomPane, e.getX(), e.getY());
 	    	 }
 
 			 
@@ -231,24 +254,24 @@ public class GUI {
 	 
 	 private void createRightMainPanel() {
 		 JPanel rightPanel = new JPanel();
-		 rightPanel.setBorder(BorderFactory.createTitledBorder("right Panel"));	//for testing remove after
+		 rightPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		 rightPanel.setLayout(new BoxLayout(rightPanel,BoxLayout.Y_AXIS ));
 		 
 		 
 		 //top
 		 JPanel topRightPanel = new JPanel();
 		 //topRightPanel.setLayout(new BoxLayout(topRightPanel, BoxLayout.Y_AXIS));
-		 topRightPanel.setBorder(BorderFactory.createTitledBorder("top"));
+		 topRightPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		 topRightPanel.setPreferredSize(new Dimension(500, 50));
 		 
 		 //middle
 		 JScrollPane msgScrollPane = new JScrollPane();
-		 msgScrollPane.setBorder(BorderFactory.createTitledBorder("scroll Panel"));		//for testing
+		 msgScrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		 msgScrollPane.setPreferredSize(new Dimension(10, 700));
 		 
 		 panel1 = new JPanel();
 		 panel1.setLayout(new BoxLayout(panel1, BoxLayout.Y_AXIS));
-		 panel1.setBorder(BorderFactory.createTitledBorder("Panel1"));
+		 //panel1.setBorder(BorderFactory.createTitledBorder("Panel1"));
          
 		 
 		 
@@ -288,7 +311,7 @@ public class GUI {
 			 JPanel msgPanel = new JPanel(new BorderLayout());
 		 
 			 JTextArea textArea = new JTextArea(chat.getMessage(i).getText());
-			 textArea.setBorder(BorderFactory.createTitledBorder("box"));	
+			 textArea.setBorder(BorderFactory.createTitledBorder(chat.getMessage(i).getUsername()));	
 			 textArea.setLineWrap(true);
 			 textArea.setWrapStyleWord(true);
 			 textArea.setEditable(false);
@@ -355,9 +378,42 @@ public class GUI {
 		
 		return profile;
 	}
+	 private JPopupMenu createNewChatOption() {
+		 JPopupMenu chatOption = new JPopupMenu();
+		 
+		 JMenuItem privateChat = new JMenuItem("Private");
+		 JMenuItem groupChat = new JMenuItem("Group Chat");
+		 
+		 privateChat.addActionListener(e -> {
+				handleCreateGroupChat();
+			});
+		 
+		 groupChat.addActionListener(e -> {
+			 handleCreatePrivateChat();
+			});
+		 
+		 chatOption.add(privateChat);
+		 chatOption.add(groupChat);
+		 
+		 return chatOption;
+		 
+	 }
+	 
+	 
+	 
 	 private void logoutUser() {
 		 //to do
 	 }
+	 
+	 private void reloadChatList();
+	 
+	 private void handleCreatePrivateChat() {
+		 
+	 }
+	 
+	 private void handleCreateGroupChat();
+	 
+	 private void HandleSendMessage();
 	 
 	 
 	
