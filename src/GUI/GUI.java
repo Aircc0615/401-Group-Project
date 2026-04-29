@@ -230,7 +230,7 @@ public class GUI {
 
 	     leftBottomPane.addMouseListener(new MouseAdapter() {
 	    	 public void mouseClicked(MouseEvent e) {
-	    		 createNewChatOption().show(leftBottomPane, e.getX(), e.getY());
+	    		 createProfileMenu().show(leftBottomPane, e.getX(), e.getY());
 	    	 }
 
 			 
