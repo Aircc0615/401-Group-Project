@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import chat.Chat;
 import chat.TextMessage;
 import user.User;
 
@@ -84,6 +85,18 @@ public class Client {
             });
         }
 	}
+
+	public User refreshCurrentUser();	//update user 
+
+	public Chat createPrivateChat(String otherUserId);
+
+	public Chat createGroupChat(List<String> memberIds);
+
+	public List<Message> getMessages(int chatId);
+	
+	
+	
+	
 	
     public static void main(String[] args) throws IOException, ClassNotFoundException {
          //cin == sin
