@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ChatConstructorTest {
-	private static int[] memberIds = {1, 2, 3, 4, 5, 6};
-	private static int creatorId = 1;
+	private static String[] memberIds = {"1", "2", "3","4", "5", "6"};
+	private static String creatorId = "1";
 	private static Chat chat;
 
 	@BeforeAll
@@ -22,7 +22,7 @@ class ChatConstructorTest {
 
 	@Test
 	void constructorProperCreatorId() {
-		assertEquals(chat.getCreatorId(), creatorId);
+		assertEquals(chat.getCreatorUsername(), creatorId);
 	}
 
 	@Test
@@ -45,14 +45,14 @@ class ChatConstructorTest {
 	@Test
 	void constructorHasValidMemberTotal() {
 		assertAll(
-		() -> assertDoesNotThrow(() -> {chat.getMemberId(memberIds.length -1);}),
-		() -> assertEquals(chat.getMemberId(0), memberIds[0]));
+		() -> assertDoesNotThrow(() -> {chat.getMemberUsername(memberIds.length -1);}),
+		() -> assertEquals(chat.getMemberUsername(0), memberIds[0]));
 	}
 
 	@Test
 	void constructorDoesNotHaveInvalidMemberTotal() {
 				assertThrows(IllegalArgumentException.class, 
-						() -> {chat.getMemberId(memberIds.length);});
+						() -> {chat.getMemberUsername(memberIds.length);});
 	}
 
 	@Test

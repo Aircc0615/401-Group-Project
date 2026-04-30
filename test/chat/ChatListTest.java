@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 
 class ChatListTest {
 	private ChatList chatList;
-	private int creatorId = 1;
-	private int[] groupIds = {1, 2, 3, 4, 5, 6};
+	private static String[] groupIds = {"1", "2", "3","4", "5", "6"};
+	private static String creatorId = "1";
 	private int privateId = 2;
 	
 	@BeforeEach
