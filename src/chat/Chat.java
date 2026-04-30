@@ -12,6 +12,7 @@ public class Chat implements Serializable{
 	private static int count = 1;
 	private final int chatId;
 	private Instant newestUpdate;
+	private Object mutexObject;
 	
 	public Chat(String creatorUsername , String[] memberUsernames, ChatType type) {
 		//Might need to Change this for dynamic arrays
@@ -24,6 +25,7 @@ public class Chat implements Serializable{
 		chatId = count++;
 		messages = new TextMessage[50];
 		numMessages = 0;
+		mutexObject = new Object();
 	}
 	
 	//Will need to figure out at what level of abstraction to load files
@@ -31,6 +33,7 @@ public class Chat implements Serializable{
 
 	//inserts a message at the end of the message array
 	public void addMessage(TextMessage message) {
+		synchronized (mutexObject) {
 		if(numMessages >= messages.length) { // makes space if need be (2x)
 			TextMessage[] newMessages = new TextMessage[messages.length * 2];
 			for(int i = 0; i < messages.length; i++) {
@@ -38,20 +41,24 @@ public class Chat implements Serializable{
 			}
 			messages = newMessages;
 		}
+		}
 		//inserts the new message and updates the timestamp for the chat
 		messages[numMessages++] = message;
 		newestUpdate = message.getTimestamp();
 	}
 	
 	public TextMessage getMessage(int messageIndex) {
+		synchronized (mutexObject) {
 		if(messageIndex >= numMessages || messageIndex < 0)
 			throw new IndexOutOfBoundsException();
 		return messages[messageIndex];
+		}
 	}
 	
 
 	//adds a new member to the chat
 	public void addMember(String username) {
+		synchronized (mutexObject) {
 		if(numMembers >= memberUsernames.length) { //makes space if need be (2x)
 			String[] newMemberUsernames = new String[memberUsernames.length * 2];
 			for(int i = 0; i < memberUsernames.length; i++) {
@@ -60,18 +67,22 @@ public class Chat implements Serializable{
 			memberUsernames = newMemberUsernames;
 		}
 		//insert the member username
-		[numMembers++] = username;
+		memberUsernames[numMembers++] = username;
+		}
 	}
 	
 	public String getMemberUsername(int memberIndex) {
+		synchronized (mutexObject) {
 		if(memberIndex >= numMembers || memberIndex < 0)
 			throw new IndexOutOfBoundsException();
 		return memberUsernames[memberIndex];
+		}
 	}
 	
 
 	//removes the member from the chat
 	public void removeMember(String username) {
+		synchronized (mutexObject) {
 		if(username == creatorUsername)
 			throw new IllegalArgumentException();
 		int indexInArray = 0;
@@ -89,6 +100,7 @@ public class Chat implements Serializable{
 			memberUsernames[i] = memberUsernames[i+1];
 		}
 		numMembers--; //decrement
+		}
 	}
 
 	//getters
@@ -106,7 +118,9 @@ public class Chat implements Serializable{
 	}
 	
 	public Instant getNewestUpdate() {
+		synchronized (mutexObject) {
 		return newestUpdate;
+		}
 	}
 	
 	//returns string in the format:
@@ -120,6 +134,7 @@ public class Chat implements Serializable{
 	//...
 	//messageN_userid,messageN_username,messageN_text,messageN_timestamp
 	public String toString() {
+		synchronized (mutexObject) {
 		String retStr = "";
 		//member_ids
 		for(int i = 0; i < numMembers; i++) {
@@ -151,9 +166,12 @@ public class Chat implements Serializable{
 					+ message.getTimestamp());
 		}
 		return retStr;
+		}
 	}
 	
 	public int getNumMessages() {
+		synchronized (mutexObject) {
 		return numMessages;
+		}
 	}
 }
