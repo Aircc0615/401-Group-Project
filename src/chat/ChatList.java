@@ -73,12 +73,12 @@ public class ChatList {
 		return chats[chatIndex].getMessage(messageIndex);
 	}
 
-	public int getChatMemberId(int chatId, int memberIndex) {
+	public String getChatMemberUsername(int chatId, int memberIndex) {
 		Chat[] tempChats = chats;
 		int chatIndex = parseId(tempChats, chatId);
 		if(chatIndex == -1)
 			throw new IndexOutOfBoundsException();
-		return chats[chatIndex].getMemberId(memberIndex);
+		return chats[chatIndex].getMemberUsername(memberIndex);
 	}
 
 	public Instant getChatNewestUpdate(int chatId) {
@@ -103,7 +103,7 @@ public class ChatList {
 	}
 
 	// attempt to add a member to a chat
-	public void addChatMember(int chatId, int memberId, int fromId) {
+	public void addChatMember(int chatId, String memberUsername, String fromUsername) {
 		// confirm that the user is the chat owner in a group chat
 		Chat[] tempChats = chats;
 		int chatIndex = parseId(tempChats, chatId);
@@ -112,13 +112,13 @@ public class ChatList {
 		Chat chat = tempChats[chatIndex];
 		if (chat.getChatType() == ChatType.PRIVATE)
 			return;
-		if (chat.getCreatorId() != fromId)
+		if (chat.getCreatorUsername() != fromUsername)
 			return;
-		chat.addMember(memberId); // add member
+		chat.addMember(memberUsername); // add member
 	}
 
 	// attempt to remove a member from a chat
-	public void removeChatMember(int chatId, int memberId, int fromId) {
+	public void removeChatMember(int chatId, String memberUsername, String fromUsername) {
 		// confirm that the user is the chat owner in a group chat
 		Chat[] tempChats = chats;
 		int chatIndex = parseId(tempChats, chatId);
@@ -127,13 +127,13 @@ public class ChatList {
 		Chat chat = tempChats[chatIndex];
 		if (chat.getChatType() == ChatType.PRIVATE)
 			return;
-		if (chat.getCreatorId() != fromId)
+		if (chat.getCreatorUsername() != fromUsername)
 			return;
-		chat.removeMember(memberId); // remove member
+		chat.removeMember(memberUsername); // remove member
 	}
 
 	// Attempts the delete the chat with id "chatId"
-	public void deleteChat(int chatId, int fromId) {
+	public void deleteChat(int chatId, String fromUsername) {
 		synchronized (writeMutex) {
 			Chat[] tempChats = getCopyOfChats();
 			int indexInArray = parseId(tempChats, chatId);
@@ -144,7 +144,7 @@ public class ChatList {
 			Chat chat = tempChats[indexInArray];
 			if (chat.getChatType() == ChatType.PRIVATE)
 				return;
-			if (chat.getCreatorId() != fromId)
+			if (chat.getCreatorUsername() != fromUsername)
 				return;
 			// remove the chat
 			for (int i = indexInArray; i < (numChats - 1); i++) {

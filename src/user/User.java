@@ -6,11 +6,9 @@ import chat.Chat;
 import chat.ChatList;
 
 public class User implements Serializable {
-	private static int count = 0;
     private static final int minLength= 6;
     private static final int maxLength = 20;
 
-    private int id;
     private String username;
     private String password;
     private boolean online;
@@ -23,7 +21,6 @@ public class User implements Serializable {
     private ChatList unreadChatList;
 
     public User() {
-        this.id = count++;
         this.username = "undefined";
         this.password = "undefined";
         this.online = false;
@@ -36,7 +33,6 @@ public class User implements Serializable {
     }
 
     public User(String username, String password) {
-        this.id = count++;
         this.username = username;
         this.password = password;
         this.online = false;
@@ -49,7 +45,6 @@ public class User implements Serializable {
     }
 
     public User(String username, String password, boolean isITUser) {
-        id = count++;
         this.username = username;
         this.password = password;
         this.online = false;
@@ -71,7 +66,7 @@ public class User implements Serializable {
         if (this.username.equals(username) && this.password.equals(password)) {
             online = true;
             auditMode = false;
-            sessionToken = "SESSION" + id + "-" + System.currentTimeMillis();
+            sessionToken = "SESSION" + username + "-" + System.currentTimeMillis();
             lastLogin = new Date();
             return true;
         }
@@ -175,15 +170,15 @@ public class User implements Serializable {
     
     
     
-    public void removeChat(Chat chat, int fromUserId) {
+    public void removeChat(Chat chat, String fromUsername) {
         if(chat == null){
             return;
         }
-        removeChat(chat.getChatId(), fromUserId);
+        removeChat(chat.getChatId(), fromUsername);
     }
 
-    public void removeChat(int chatId, int fromUserId) {
-        chatList.deleteChat(chatId, fromUserId);
+    public void removeChat(int chatId, String fromUsername) {
+        chatList.deleteChat(chatId, fromUsername);
         unreadChatList.deleteChat(chatId, true);
     }
 
@@ -255,16 +250,16 @@ public class User implements Serializable {
         return containsChat(unreadChatList,chatId);
     }
     
-    public void removeChatMember(Chat chat,User member,int fromUserId){
+    public void removeChatMember(Chat chat,User member, String fromUsername){
         if(chat == null || member == null){
             return;
         }
 
-        removeChatMember(chat.getChatId(), member.getId(), fromUserId);
+        removeChatMember(chat.getChatId(), member.getUsername(), fromUsername);
     }
 
-    public void removeChatMember(int chatId, int memberId, int fromUserId){
-        chatList.removeChatMember(chatId,memberId,fromUserId);
+    public void removeChatMember(int chatId, String memberUsername, String fromUsername){
+        chatList.removeChatMember(chatId,memberUsername, fromUsername);
     }
     
     
@@ -337,9 +332,6 @@ public class User implements Serializable {
     
     
     
-    public int getId() {
-        return this.id;
-    }
 
     public String getUsername() {
         return this.username;

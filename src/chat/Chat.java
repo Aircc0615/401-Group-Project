@@ -1,23 +1,24 @@
 package chat;
+import java.io.Serializable;
 import java.time.Instant;
 
-public class Chat {
+public class Chat implements Serializable{
 	private TextMessage[] messages;
 	private int numMessages;
-	private int[] memberIds;
+	private String[] memberUsernames;
 	private int numMembers;
 	private final ChatType chatType;
-	private final int chatCreatorId;
+	private final String creatorUsername;
 	private static int count = 1;
 	private final int chatId;
 	private Instant newestUpdate;
 	
-	public Chat(int creatorId, int[] memberIds, ChatType type) {
+	public Chat(String creatorUsername , String[] memberUsernames, ChatType type) {
 		//Might need to Change this for dynamic arrays
-		numMembers = memberIds.length;
-		this.memberIds = memberIds;
+		numMembers = memberUsernames.length;
+		this.memberUsernames = memberUsernames;
 		//
-		chatCreatorId = creatorId;
+		this.creatorUsername = creatorUsername;
 		chatType = type;
 		newestUpdate = Instant.now();
 		chatId = count++;
@@ -50,32 +51,32 @@ public class Chat {
 	
 
 	//adds a new member to the chat
-	public void addMember(int memberId) {
-		if(numMembers >= memberIds.length) { //makes space if need be (2x)
-			int[] newMemberIds = new int[memberIds.length * 2];
-			for(int i = 0; i < memberIds.length; i++) {
-				newMemberIds[i] = memberIds[i];
+	public void addMember(String username) {
+		if(numMembers >= memberUsernames.length) { //makes space if need be (2x)
+			String[] newMemberUsernames = new String[memberUsernames.length * 2];
+			for(int i = 0; i < memberUsernames.length; i++) {
+				newMemberUsernames[i] = memberUsernames[i];
 			}
-			memberIds = newMemberIds;
+			memberUsernames = newMemberUsernames;
 		}
-		//insert the member id
-		memberIds[numMembers++] = memberId;
+		//insert the member username
+		[numMembers++] = username;
 	}
 	
-	public int getMemberId(int memberIndex) {
+	public String getMemberUsername(int memberIndex) {
 		if(memberIndex >= numMembers || memberIndex < 0)
 			throw new IndexOutOfBoundsException();
-		return memberIds[memberIndex];
+		return memberUsernames[memberIndex];
 	}
 	
 
 	//removes the member from the chat
-	public void removeMember(int memberId) {
-		if(memberId == chatCreatorId)
+	public void removeMember(String username) {
+		if(username == creatorUsername)
 			throw new IllegalArgumentException();
 		int indexInArray = 0;
 		while(indexInArray < numMembers) { //attempts to find the member
-			if(memberIds[indexInArray] == memberId) {
+			if(memberUsernames[indexInArray] == username) {
 				break;
 			}
 			indexInArray++;
@@ -85,15 +86,15 @@ public class Chat {
 		}
 		//shift array down if found
 		for(int i = indexInArray; i < (numMembers - 1); i++) {
-			memberIds[i] = memberIds[i+1];
+			memberUsernames[i] = memberUsernames[i+1];
 		}
 		numMembers--; //decrement
 	}
 
 	//getters
 	
-	public int getCreatorId() {
-		return chatCreatorId;
+	public String getCreatorUsername() {
+		return creatorUsername;
 	}
 	
 	public int getChatId() {
@@ -124,7 +125,7 @@ public class Chat {
 		for(int i = 0; i < numMembers; i++) {
 			if(i != 0)
 				retStr += ',';
-			retStr += memberIds[i];
+			retStr += memberUsernames[i];
 		}
 		retStr += '\n';
 		//chat type
@@ -139,7 +140,7 @@ public class Chat {
 		retStr += newestUpdate;
 		retStr += '\n';
 		//chat creator id
-		retStr += chatCreatorId;
+		retStr += creatorUsername;
 	
 		//chat messages
 		for(int i = 0; i < numMessages; i++) {
