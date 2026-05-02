@@ -65,9 +65,18 @@ public class Server {
     		client.sendToClient(messages);
     	}
     }
+    
+	// MESSAGE: MainType.TEXT    
+	// SubType.SEND_TEXT_MESSAGE 
+    public void handleSendText(Message message) throws IOException {
+        Message msgToSend = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE ,Status.SUCCESS, message.getText(), message.getUser());
+        List<Message> messagesToSend = new ArrayList<>();
+        messagesToSend.add(msgToSend);
+        sendToClients(messagesToSend);
+    }
    
 	// MESSAGE: MainType.CHAT_OPERATIONs    
-	// CREATE_GC
+	// SubType.CREATE_GC
 	public void handleCreateChat(Message message, ClientHandler clientHandler) {
 		// TODO Auto-generated method stub
 		

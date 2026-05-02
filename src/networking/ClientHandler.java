@@ -63,19 +63,6 @@ public class ClientHandler implements Runnable{
             e.printStackTrace();
         }
     }
-
-  //helper functions
-    public void successfulLogin() throws IOException {
-        Message loginSuccess = new Message(MainType.AUTHENTICATION, SubType.LOGIN_RESPONSE , Status.SUCCESS, "Login successful", null); //create a login success message to send to the user
-        objectOutputStream.writeObject(loginSuccess); //sends back the successful login message
-        messageList.add(loginSuccess); //login message that is sent out from server to client gets added to the array
-    }
-    
-    public void failedLoginAttempt() throws IOException{
-    	Message loginFailed = new Message(MainType.AUTHENTICATION, SubType.LOGIN_RESPONSE , Status.SUCCESS, "Invalid username/password. Please try again.", null); //create a login success message to send to the user
-        objectOutputStream.writeObject(loginFailed); //sends back the successful login message
-        messageList.add(loginFailed); //login message that is sent out from server to client gets added to the array
-    }
     
     public boolean performAuthenticationOperation(Socket clientSocket, InputStream clientInputStream, Message message, List<Message> messageList) throws IOException {
         //if the login is successful we perform the next step, otherwise we send a failed response
@@ -103,16 +90,6 @@ public class ClientHandler implements Runnable{
 
         return false; //same here might need to be changed
     }
-    
-    public void sendText(Message message) throws IOException {
-        System.out.println("From " + clientSocket.getInetAddress().getHostAddress() + ": " + message.getText()); //display message along with who its from
-        Message msgToSend = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE ,Status.SUCCESS, message.getText(), message.getUser()); //At the moment this just echoes and doesnt handle sending to other clients
-        
-        List<Message> messagesToSend = new ArrayList<>();
-        messagesToSend.add(msgToSend);
-        
-        server.sendToClients(messagesToSend);
-    }
 
     //facade/wrapper function that calls the function corresponding to the message types
     public void performMessageOperation(Socket clientSocket, InputStream clientInputStream, Message message, List<Message> messageList) throws IOException { //mainType:  AUTHENTICATION, DISPLAY, TEXT, CHAT_OPERATION, AUDIT_OPERATION
@@ -132,7 +109,8 @@ public class ClientHandler implements Runnable{
         else if (message.mainType == MainType.TEXT){
             switch (message.subType) {
                 case SubType.SEND_TEXT_MESSAGE:
-                    sendText(message);
+                	System.out.println("From " + clientSocket.getInetAddress().getHostAddress() + ": " + message.getText()); //display message along with who its from
+                    server.handleSendText(message);
                     break;
                 default:
                     System.out.println("Message Object Constructed Incorrectly");
@@ -190,7 +168,18 @@ public class ClientHandler implements Runnable{
     }
 
     
-	
+    //helper functions
+    public void successfulLogin() throws IOException {
+        Message loginSuccess = new Message(MainType.AUTHENTICATION, SubType.LOGIN_RESPONSE , Status.SUCCESS, "Login successful", null); //create a login success message to send to the user
+        objectOutputStream.writeObject(loginSuccess); //sends back the successful login message
+        messageList.add(loginSuccess); //login message that is sent out from server to client gets added to the array
+    }
+    
+    public void failedLoginAttempt() throws IOException{
+    	Message loginFailed = new Message(MainType.AUTHENTICATION, SubType.LOGIN_RESPONSE , Status.SUCCESS, "Invalid username/password. Please try again.", null); //create a login success message to send to the user
+        objectOutputStream.writeObject(loginFailed); //sends back the successful login message
+        messageList.add(loginFailed); //login message that is sent out from server to client gets added to the array
+    }
 
 	public void sendToClient(List<Message> messages) throws IOException {
 		objectOutputStream.writeObject(messages);
