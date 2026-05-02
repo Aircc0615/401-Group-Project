@@ -102,7 +102,12 @@ public class Client {
 		System.out.println("Please enter your password!");
         String password = sin.nextLine();
         User user = new User(username, password);
+<<<<<<< Updated upstream
 =======
+=======
+        
+        User authenticatedUser = login(user, objectOutputStream, clientSideSocket);
+>>>>>>> Stashed changes
 
 	
     // MESSAGE: MainType.AUTHENTICATION
