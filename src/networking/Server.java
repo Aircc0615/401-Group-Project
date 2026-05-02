@@ -66,47 +66,55 @@ public class Server {
     	}
     }
    
-    
-    public void handleAuditExportChat(Message message, ClientHandler clientHandler) {
-		// TODO Auto-generated method stub
-		
-	}
-
-    public void handleAuditViewChats(Message message, ClientHandler clientHandler) {
-		// TODO Auto-generated method stub
-		
-	}
-
-    public void handleAuditSelectUser(Message message, ClientHandler clientHandler) {
-		// TODO Auto-generated method stub
-		
-	}
-
-    public void handleEnterAuditMode(Message message, ClientHandler clientHandler) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void handleDeleteGC(Message message, ClientHandler clientHandler) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void handleRemoveUserFromChat(Message message, ClientHandler clientHandler) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void handleAddUserToChat(Message message, ClientHandler clientHandler) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	// MESSAGE: MainType.CHAT_OPERATIONs
+	// CREATE_GC
 	public void handleCreateChat(Message message, ClientHandler clientHandler) {
 		// TODO Auto-generated method stub
 		
 	}
-   
+	
+	// SubType.ADD_USER_TO_GC
+	public void handleAddUserToChat(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	// SubType.REMOVE_USER_FROM_GC
+	public void handleRemoveUserFromChat(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	// SubType.DELETE_GC
+	public void handleDeleteGC(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+    
+    // MESSAGE: MainType.AUDIT_OPERATION
+    // SubType.ENTER_AUDIT_MODE
+    public void handleEnterAuditMode(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+    
+	// SubType.SELECT_USER
+    public void handleAuditSelectUser(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+    
+    // SubType.VIEW_CHATS
+    public void handleAuditViewChats(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+    
+    // SubType.EXPORT_CHAT_LOG
+    public void handleAuditExportChat(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
 
