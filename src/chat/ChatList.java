@@ -247,10 +247,10 @@ public class ChatList {
 	}
 	
 	//helper
-	public int getNumChat() {
+	public int getNumChats() {
 		return numChats;
 	}
-	public Chat getChat(int chatIndex) {
-		return chats[chatIndex];
+	public Chat getCopyOfChat(int chatId) {
+		return chats[chatId].getCopy();
 	}
 }
