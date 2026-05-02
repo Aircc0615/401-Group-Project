@@ -66,7 +66,7 @@ public class Server {
     	}
     }
    
-	// MESSAGE: MainType.CHAT_OPERATIONs
+	// MESSAGE: MainType.CHAT_OPERATIONs    
 	// CREATE_GC
 	public void handleCreateChat(Message message, ClientHandler clientHandler) {
 		// TODO Auto-generated method stub
@@ -112,6 +112,24 @@ public class Server {
     
     // SubType.EXPORT_CHAT_LOG
     public void handleAuditExportChat(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+    
+    
+    //can someone clarify how to handle the message types below
+    //i did not add any client side operations to handle this message type
+	public void handleChatList(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void handleOpenChat(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void handleChatUser(Message message, ClientHandler clientHandler) {
 		// TODO Auto-generated method stub
 		
 	}
