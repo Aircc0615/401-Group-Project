@@ -141,14 +141,14 @@ public class ClientHandler implements Runnable{
 
         else if(message.mainType == MainType.CHAT_OPERATION){
             switch (message.subType) {
-                case SubType.OPEN_CHAT:
-                    //open chat function here
+                case SubType.OPEN_CHAT:    //can someone clarify how to handle this message type
+                    server.handleOpenChat(message, this);
                     break;
-                case SubType.CHAT_LIST:
-                    //chat list response function here
+                case SubType.CHAT_LIST:    //can someone clarify how to handle this message type
+                	server.handleChatList(message, this);
                     break;
-                case SubType.CHAT_USER:
-                    //chat user function here
+                case SubType.CHAT_USER:    //can someone clarify how to handle this message type
+                	server.handleChatUser(message, this);
                     break;
                 case SubType.CREATE_GC:
                     server.handleCreateChat(message, this);
