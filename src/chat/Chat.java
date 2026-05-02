@@ -29,8 +29,9 @@ public class Chat implements Serializable {
 		mutexObject = new Object();
 	}
 
-	public Chat(TextMessage[] messages, int numMessages, String[] memberUsernames, int numMembers, ChatType chatType,
-	    String creatorUsername, int chatId, Instant newestUpdate) {
+	public Chat(TextMessage[] messages, int numMessages, String[] memberUsernames, 
+			int numMembers, ChatType chatType,
+			String creatorUsername, int chatId, Instant newestUpdate) {
 		this.messages = messages;
 		this.numMessages = numMessages;
 		this.memberUsernames = memberUsernames;

@@ -5,7 +5,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+
+import chat.Chat;
 import chat.ChatList;
+import chat.ChatType;
 import user.User;
 import user.UserLoginModule;
 
@@ -78,8 +81,14 @@ public class Server {
 	// MESSAGE: MainType.CHAT_OPERATIONs    
 	// SubType.CREATE_GC
 	public void handleCreateChat(Message message, ClientHandler clientHandler) {
-		// TODO Auto-generated method stub
-		
+		String[] memberUsernames = message.getText().split(", "); //the usernames will be passed as a single string so we split
+		Chat newChat = null;
+		if(memberUsernames.length > 1)
+			newChat = new Chat(message.getUser().getUsername(), memberUsernames, ChatType.GROUP);
+		else {
+			newChat = new Chat(message.getUser().getUsername(), memberUsernames, ChatType.PRIVATE);
+		}
+		chats.addChat(newChat);
 	}
 	
 	// SubType.ADD_USER_TO_GC
