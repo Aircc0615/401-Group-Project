@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import chat.Chat;
 import chat.TextMessage;
 import user.User;
 
@@ -90,31 +91,12 @@ public class Client {
             });
         }
 	}
-<<<<<<< Updated upstream
-	
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-         //cin == sin
-    	
-    	Socket clientSideSocket = connectToServer();
-
-        System.out.println("Please enter your username!");
-		String username = sin.nextLine();
-		System.out.println("Please enter your password!");
-        String password = sin.nextLine();
-        User user = new User(username, password);
-<<<<<<< Updated upstream
-=======
-=======
-        
-        User authenticatedUser = login(user, objectOutputStream, clientSideSocket);
->>>>>>> Stashed changes
 
 	
     // MESSAGE: MainType.AUTHENTICATION
     // SubType.LOGIN
 	public static User login(User user) throws IOException, ClassNotFoundException {
         System.out.println(user.getUsername() + " attempting to log in...");
->>>>>>> Stashed changes
         
         Message loginRequestMessage = new Message(MainType.AUTHENTICATION, SubType.LOGIN, Status.REQUEST, user.getUsername() + "requesting login", user); //login message created
         messageHistory.add(loginRequestMessage); //add the login message to the message history
@@ -132,9 +114,6 @@ public class Client {
             System.out.println("Enter text to send!\n");
             return user;
         }
-<<<<<<< Updated upstream
-    }
-=======
         else {
         	System.out.println("Invalid Login. Please try again.");
         	return null;
@@ -239,6 +218,5 @@ public class Client {
 		objectOutputStream.writeObject(exportLogRequest);
 	}
 	
->>>>>>> Stashed changes
 
 }
