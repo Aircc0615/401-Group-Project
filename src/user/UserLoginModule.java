@@ -12,13 +12,13 @@ public class UserLoginModule {
 		this.users = users;
 	}
 	
-	public boolean authenticateUser(User userLoggingIn) {
+	public User authenticateUser(User userLoggingIn) {
 		for(User user : users) {
 			if(user.getUsername().equals(userLoggingIn.getUsername()) && user.getPassword().equals(userLoggingIn.getPassword())) {
-				return true;
+				return user;
 			}
 		}
-		return false;
+		return null;
 	}
 	
 	public void createNewUser() {

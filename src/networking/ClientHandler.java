@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import user.User;
+
 public class ClientHandler implements Runnable{
     private final Socket clientSocket;
     private Server server;
@@ -38,9 +40,9 @@ public class ClientHandler implements Runnable{
             messageList.add(message); //add the client message to the array of messages on the server side
 
             if (message.mainType == MainType.AUTHENTICATION) { //if its a login
-                boolean authenticatedUser = performAuthenticationOperation(clientSocket, clientInputStream, message, messageList); //returns true if its a valid user/false if not
+                User authenticatedUser = performLoginOperation(message); //returns true if its a valid user/false if not
 
-                if (authenticatedUser) { //if they're a valid user they can go ahead and send messages
+                if (authenticatedUser != null) { //if they're a valid user they can go ahead and send messages
                     while (message.subType != SubType.LOGOUT) {
                         message = (Message) objectInputStream.readObject(); //read the incoming object
 
@@ -64,32 +66,15 @@ public class ClientHandler implements Runnable{
         }
     }
     
-    public boolean performAuthenticationOperation(Socket clientSocket, InputStream clientInputStream, Message message, List<Message> messageList) throws IOException {
+    public User performLoginOperation(Message message) throws IOException {
         //if the login is successful we perform the next step, otherwise we send a failed response
         if(message.subType == SubType.LOGIN) {
-        	successfulLogin(); //at the moment the code will always send a successful respondse
-        	return true;
-        	/* this works but the client doesnt support creating new users just yet
-            boolean authenticated = server.authenticateUser(message.getUser());
-        	if(authenticated) {
-        		successfulLogin(); //this function at the moment just sends the user a successful login response message and adds the message to our message list array
-				return true; //if successful/this needs to be changed if false but for the current version set to true
-        	}
-	        else {
-	        	failedLoginAttempt();
-	        }
-	        */
+        	return server.authenticateUser(message.getUser());
         }
-
-        //this could be moved into its own function, i just have it here since it was listed as a subtype, i assumed it was associated to our authentication module but
-        else if (message.subType == SubType.LOGOUT){
-            //logout function here
-            // if(successfulLogout()) return true;
-            // else false
-         }
-
-        return false; //same here might need to be changed
+        return null;
     }
+
+//add logout operation method below:
 
     //facade/wrapper function that calls the function corresponding to the message types
     public void performMessageOperation(Socket clientSocket, InputStream clientInputStream, Message message, List<Message> messageList) throws IOException { //mainType:  AUTHENTICATION, DISPLAY, TEXT, CHAT_OPERATION, AUDIT_OPERATION

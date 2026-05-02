@@ -55,7 +55,7 @@ public class Server {
 
     }
     
-    public boolean authenticateUser(User userToAuthenticate) {
+    public User authenticateUser(User userToAuthenticate) {
     	return userLoginModule.authenticateUser(userToAuthenticate);
     }
     
