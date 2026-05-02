@@ -3,6 +3,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
 
+import chat.TextMessage;
 import user.User;
 
 public class Message implements Serializable { //serialize takes the object and converts into stream of bytes
@@ -20,10 +21,11 @@ public class Message implements Serializable { //serialize takes the object and 
     private String password;
     private boolean success;
     private int userId;
+    private int chatId;
+    private TextMessage textMessage;
     
     private String chatList;
     private String chatUserList;
-    private String chatId;
     private String selectedUserId;
     private String messageContent;
     private String chatType;
@@ -39,6 +41,23 @@ public class Message implements Serializable { //serialize takes the object and 
         date = new Date();
         timeStamp = Instant.now();
         user = null;
+    }
+    public Message(MainType mainType, SubType subType, Status status, String text, String username, int chatId) {
+    		id = count++;
+        this.mainType = mainType;
+        this.subType = subType;
+        this.status = status;
+        this.text = text;
+        this.username = username;
+        this.chatId = chatId;
+    }
+    public Message(MainType mainType, SubType subType, Status status, TextMessage textMessage, int chatId) {
+    		id = count++;
+        this.mainType = mainType;
+        this.subType = subType;
+        this.status = status;
+        this.textMessage = textMessage;
+        this.chatId = chatId;
     }
 
     public Message(MainType mainType, SubType subType, Status status, String text, User user){
@@ -66,6 +85,14 @@ public class Message implements Serializable { //serialize takes the object and 
 
     public int getId(){
         return id;
+    }
+
+    public int getChatId(){
+        return chatId;
+    }
+
+    public TextMessage getTextMessage() {
+    		return textMessage;
     }
 
     public MainType getMainType() { return mainType; }

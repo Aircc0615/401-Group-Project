@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import chat.Chat;
 import chat.ChatList;
+import chat.TextMessage;
 
 public class User implements Serializable {
     private static int count = 0;
@@ -172,7 +173,9 @@ public class User implements Serializable {
         chatList.addChat(chat);
     }
     
-    
+    public void addMessageToChat(int chatId, TextMessage msg) {
+    	chatList.addChatMessage(chatId, msg);
+    }
     
     
     public void removeChat(Chat chat, String fromUsername) {
@@ -421,5 +424,9 @@ public class User implements Serializable {
 	public int getId() {
 		// TODO Auto-generated method stub
 		return id;
+	}
+
+	public void updateChatOrder(int chatId) {
+		chatList.updateOrder(chatId);
 	}
 }

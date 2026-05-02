@@ -16,6 +16,14 @@ public class UserLoginModule {
 		this.usernameToUser = usernameToUser;
 	}
 	
+	public User authenticateUser(User userLoggingIn) {
+		for(User user : users) {
+			if(user.getUsername().equals(userLoggingIn.getUsername()) && user.getPassword().equals(userLoggingIn.getPassword())) {
+				return user;
+			}
+		}
+		return null;
+  }
 	public boolean authenticateUser(User userLoggingIn) {
 		String username = userLoggingIn.getUsername();
 		boolean userAuthenticated = false;

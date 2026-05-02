@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import user.User;
+
 public class ClientHandler implements Runnable{
     private final Socket clientSocket;
     private Server server;
@@ -38,9 +40,9 @@ public class ClientHandler implements Runnable{
             messageList.add(message); //add the client message to the array of messages on the server side
 
             if (message.mainType == MainType.AUTHENTICATION) { //if its a login
-                boolean authenticatedUser = performAuthenticationOperation(clientSocket, clientInputStream, message, messageList); //returns true if its a valid user/false if not
+                User authenticatedUser = performLoginOperation(message); //returns true if its a valid user/false if not
 
-                if (authenticatedUser) { //if they're a valid user they can go ahead and send messages
+                if (authenticatedUser != null) { //if they're a valid user they can go ahead and send messages
                     while (message.subType != SubType.LOGOUT) {
                         message = (Message) objectInputStream.readObject(); //read the incoming object
 
@@ -64,6 +66,16 @@ public class ClientHandler implements Runnable{
         }
     }
     
+    public User performLoginOperation(Message message) throws IOException {
+        //if the login is successful we perform the next step, otherwise we send a failed response
+        if(message.subType == SubType.LOGIN) {
+        	return server.authenticateUser(message.getUser(), this);
+        }
+      return null;
+    }
+  
+  
+  
     public boolean performAuthenticationOperation(Socket clientSocket, InputStream clientInputStream, Message message, List<Message> messageList) throws IOException {
         //if they want to create a new user
     	if(message.subType == SubType.CREATE_USER) {
@@ -85,16 +97,9 @@ public class ClientHandler implements Runnable{
 	        }
 	        */
         }
-
-        //this could be moved into its own function, i just have it here since it was listed as a subtype, i assumed it was associated to our authentication module but
-        else if (message.subType == SubType.LOGOUT){
-            //logout function here
-            // if(successfulLogout()) return true;
-            // else false
-         }
-
-        return false; //same here might need to be changed
     }
+
+//add logout operation method below:
 
     //facade/wrapper function that calls the function corresponding to the message types
     public void performMessageOperation(Socket clientSocket, InputStream clientInputStream, Message message, List<Message> messageList) throws IOException { //mainType:  AUTHENTICATION, DISPLAY, TEXT, CHAT_OPERATION, AUDIT_OPERATION
@@ -115,7 +120,7 @@ public class ClientHandler implements Runnable{
             switch (message.subType) {
                 case SubType.SEND_TEXT_MESSAGE:
                 	System.out.println("From " + clientSocket.getInetAddress().getHostAddress() + ": " + message.getText()); //display message along with who its from
-                    server.handleSendText(message);
+                    handleSendText(message);
                     break;
                 default:
                     System.out.println("Message Object Constructed Incorrectly");
@@ -185,5 +190,16 @@ public class ClientHandler implements Runnable{
 
 	public void sendToClient(List<Message> messages) throws IOException {
 		objectOutputStream.writeObject(messages);
+	}
+
+	private void handleSendText(Message message) {
+		String text = message.getText();
+		String username = message.getUsername();
+		int chatId = message.getChatId();
+		try {
+			server.handleSendText(text, username, chatId);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

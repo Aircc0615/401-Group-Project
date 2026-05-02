@@ -97,11 +97,23 @@ public class Chat implements Serializable {
 		}
 	}
 
-	public String getMemberUsername(int memberIndex) {
+	public boolean memberIsInChat(String username) {
 		synchronized (mutexObject) {
-			if (memberIndex >= numMembers || memberIndex < 0)
-				throw new IndexOutOfBoundsException();
-			return memberUsernames[memberIndex];
+			for(int i = 0; i < numMembers; i++) {
+				if(username == memberUsernames[i])
+					return true;
+			}
+			return false;
+		}
+	}
+
+	public String[] getMembersInChat() {
+		synchronized (mutexObject) {
+			String[] membersCopy = new String[numMembers];
+			for(int i = 0; i < numMembers; i++) {
+				membersCopy[i] = memberUsernames[i];
+			}
+			return membersCopy;
 		}
 	}
 
@@ -195,6 +207,12 @@ public class Chat implements Serializable {
 	public int getNumMessages() {
 		synchronized (mutexObject) {
 			return numMessages;
+		}
+	}
+
+	public int getNumMembers() {
+		synchronized (mutexObject) {
+			return numMembers;
 		}
 	}
 

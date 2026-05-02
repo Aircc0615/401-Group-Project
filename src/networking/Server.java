@@ -9,6 +9,7 @@ import java.util.HashMap;
 import chat.Chat;
 import chat.ChatList;
 import chat.ChatType;
+import chat.TextMessage;
 import user.User;
 import user.UserLoginModule;
 
@@ -20,7 +21,7 @@ public class Server {
 	private int numOnlineUsers;
 	private static List<ClientHandler> currentClients = new ArrayList<>();
 	private int numCurrentClients;
-	private HashMap<Integer, ClientHandler> mapIdtoClient; //int is id, at the moment not being used but could be use for more efficient message routing
+	private HashMap<String, ClientHandler> mapUsernameToClient; //string is username
 	private HashMap<String, User> usernameToUser = new HashMap();
 	private UserLoginModule userLoginModule = new UserLoginModule(usernameToUser); 
 	
@@ -55,8 +56,11 @@ public class Server {
 
     }
     
-    public boolean authenticateUser(User userToAuthenticate) {
-    	return userLoginModule.authenticateUser(userToAuthenticate);
+    public User authenticateUser(User userToAuthenticate, ClientHandler handler) {
+    	User user = userLoginModule.authenticateUser(userToAuthenticate);
+    	if(user != null)
+    		mapUsernameToClient.put(user.getUsername(), handler);
+    	return user;
     }
     
     public void handleCreateNewUser(Message message, ClientHandler clientHandler) throws IOException {
@@ -74,15 +78,45 @@ public class Server {
 	}
     
     public void sendToClients(List<Message> messages) throws IOException {
-    	for(ClientHandler client: currentClients) {
+    	for(ClientHandler client : currentClients) {
     		client.sendToClient(messages);
     	}
+    }
+
+    public void sendToClients(List<Message> messages, String[] usernames) throws IOException {
+    	for(String username : usernames) {
+    		ClientHandler client = mapUsernameToClient.get(username);
+    		client.sendToClient(messages);
+    	}
+    }
+
+    public void sendToClient(List<Message> messages, String username) throws IOException {
+    	ClientHandler client = mapUsernameToClient.get(username);
+    	client.sendToClient(messages);
     }
     
 	// MESSAGE: MainType.TEXT    
 	// SubType.SEND_TEXT_MESSAGE 
-    public void handleSendText(Message message) throws IOException {
-        Message msgToSend = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE ,Status.SUCCESS, message.getText(), message.getUser());
+    public void handleSendText(String text, String username, int chatId) throws IOException {
+    		User user = usernameToUser.get(username);
+    		TextMessage txtMsg = new TextMessage(text, username, user.getId());
+    		try {
+    			chats.addChatMessage(chatId, txtMsg);
+    		} catch (IndexOutOfBoundsException e) {
+    			System.err.println("Invalid Chat Id of " + chatId + " detected from user: " + username);
+    			Message failedText = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE, Status.FAILED, txtMsg, chatId);
+    			List<Message> failureMessages = new ArrayList<>();
+    			failureMessages.add(failedText);
+    			sendToClient(failureMessages, username);
+    			return;
+    		}
+    		String[] usernames = chats.getChatMembers(chatId);
+    		for(String name : usernames) {
+    			User otherUser = usernameToUser.get(name);
+    			otherUser.updateChatOrder(chatId);
+    		}
+    	
+        Message msgToSend = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE ,Status.SUCCESS, txtMsg, chatId);
         List<Message> messagesToSend = new ArrayList<>();
         messagesToSend.add(msgToSend);
         sendToClients(messagesToSend);
