@@ -17,31 +17,25 @@ public class UserLoginModule {
 	}
 	
 	public User authenticateUser(User userLoggingIn) {
-		for(User user : users) {
-			if(user.getUsername().equals(userLoggingIn.getUsername()) && user.getPassword().equals(userLoggingIn.getPassword())) {
-				return user;
+		String username = userLoggingIn.getUsername();
+		String password = userLoggingIn.getPassword();
+		if(usernameToUser.containsKey(username)) {
+			User userInMap = usernameToUser.get(username);
+			if(userInMap.getUsername().equals(username) && userInMap.getPassword().equals(password)) {
+				return userInMap;
 			}
 		}
 		return null;
   }
-	public boolean authenticateUser(User userLoggingIn) {
-		String username = userLoggingIn.getUsername();
-		boolean userAuthenticated = false;
-		if(usernameToUser.containsKey(username)) {
-			userAuthenticated = usernameToUser.get(username).getPassword().equals(userLoggingIn.getPassword());
-		}
-		
-		return userAuthenticated;
-	}
 	
-	public User createUser(Message message) {
-		String username = message.getUser().getUsername();
+	public User createUser(User user) {
+		String username = user.getUsername();
 		if(usernameToUser.containsKey(username)){
 			return null;
 		}
 		
-		usernameToUser.put(username, message.getUser());
-		return message.getUser();
+		usernameToUser.put(username, user);
+		return user;
 	}
 
 

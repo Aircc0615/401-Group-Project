@@ -63,18 +63,20 @@ public class Server {
     	return user;
     }
     
-    public void handleCreateNewUser(Message message, ClientHandler clientHandler) throws IOException {
+    public User handleCreateNewUser(User user, ClientHandler clientHandler) throws IOException {
     	Message authenticationResponse = null;
     	List<Message> messageToSend = new ArrayList<>();
-    	if(userLoginModule.createUser(message) != null) {
-    		users.add(message.getUser());
-	        authenticationResponse = new Message(MainType.CHAT_OPERATION, SubType.CREATE_USER , Status.SUCCESS, "User created successfully", message.getUser()); //create a login success message to send to the user
+    	User newUser = userLoginModule.createUser(user);
+    	if(newUser != null) {
+    		users.add(newUser);
+	        authenticationResponse = new Message(MainType.CHAT_OPERATION, SubType.CREATE_USER , Status.SUCCESS, "User created successfully", newUser); //create a login success message to send to the user
     	}
     	else {
-    		authenticationResponse = new Message(MainType.CHAT_OPERATION, SubType.CREATE_USER , Status.FAILED, "Failed to create new user", message.getUser());
+    		authenticationResponse = new Message(MainType.CHAT_OPERATION, SubType.CREATE_USER , Status.FAILED, "Failed to create new user", newUser);
     	}
     	messageToSend.add(authenticationResponse);
     	clientHandler.sendToClient(messageToSend);
+    	return newUser;
 	}
     
     public void sendToClients(List<Message> messages) throws IOException {

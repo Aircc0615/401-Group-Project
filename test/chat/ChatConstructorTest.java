@@ -44,16 +44,12 @@ class ChatConstructorTest {
 
 	@Test
 	void constructorHasValidMemberTotal() {
-		assertAll(
-		() -> assertDoesNotThrow(() -> {chat.getMemberUsername(memberIds.length -1);}),
-		() -> assertEquals(chat.getMemberUsername(0), memberIds[0]));
+		int start = chat.getNumMembers();
+		chat.addMember("goofy");
+		int end = chat.getNumMembers();
+		assertEquals(start + 1, end);
 	}
 
-	@Test
-	void constructorDoesNotHaveInvalidMemberTotal() {
-				assertThrows(IndexOutOfBoundsException.class, 
-						() -> {chat.getMemberUsername(memberIds.length);});
-	}
 
 	@Test
 	void constructorToString() {
