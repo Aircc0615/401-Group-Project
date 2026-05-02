@@ -81,19 +81,25 @@ public class Server {
 	// MESSAGE: MainType.CHAT_OPERATIONs    
 	// SubType.CREATE_GC
 	public void handleCreateChat(Message message, ClientHandler clientHandler) {
-		String[] memberUsernames = message.getText().split(", "); //the usernames will be passed as a single string so we split
+		String usersToBeAddedToChat = message.getUser().getUsername() + ", "+ message.getText();
+		String[] memberUsernames = usersToBeAddedToChat.split(","); //the usernames will be passed as a single string so we split
+		for(int i = 0; i < memberUsernames.length; i++) {
+			memberUsernames[i] = memberUsernames[i].trim();
+		}
+		
 		Chat newChat = null;
-		if(memberUsernames.length > 1)
-			newChat = new Chat(message.getUser().getUsername(), memberUsernames, ChatType.GROUP);
-		else {
+		if(memberUsernames.length == 2) {
 			newChat = new Chat(message.getUser().getUsername(), memberUsernames, ChatType.PRIVATE);
+		}
+		else {
+			newChat = new Chat(message.getUser().getUsername(), memberUsernames, ChatType.GROUP);
 		}
 		chats.addChat(newChat);
 	}
 	
 	// SubType.ADD_USER_TO_GC
 	public void handleAddUserToChat(Message message, ClientHandler clientHandler) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 	
