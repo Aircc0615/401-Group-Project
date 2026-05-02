@@ -113,6 +113,8 @@ public class Server {
 			newChat = new Chat(message.getUser().getUsername(), chatUsers, ChatType.GROUP);
 		}
 		chats.addChat(newChat);
+		
+		//need to send response to client
 	}
 	
 	// SubType.ADD_USER_TO_GC
