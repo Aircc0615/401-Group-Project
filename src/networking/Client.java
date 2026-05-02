@@ -159,7 +159,7 @@ public class Client {
 	
 	// MESSAGE: MainType.CHAT_OPERATIONs
 	// CREATE_GC 	||       this will work for making either a DM or GC
-	public void createGroupChat(String usernames) throws IOException {
+	public void createChat(String usernames) throws IOException {
 		Message createGC= new Message(MainType.CHAT_OPERATION, SubType.CREATE_GC , Status.REQUEST, usernames, user);
 		messageHistory.add(createGC); //store operation in history
 		objectOutputStream.writeObject(createGC);

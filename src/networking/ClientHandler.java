@@ -11,7 +11,6 @@ import java.util.List;
 
 public class ClientHandler implements Runnable{
     private final Socket clientSocket;
-    private int userId;
     private Server server;
     private static List<Message> messageList = new ArrayList<>();
     
@@ -105,7 +104,7 @@ public class ClientHandler implements Runnable{
         return false; //same here might need to be changed
     }
     
-    public void sendText(Socket clientSocket, Message message) throws IOException {
+    public void sendText(Message message) throws IOException {
         System.out.println("From " + clientSocket.getInetAddress().getHostAddress() + ": " + message.getText()); //display message along with who its from
         Message msgToSend = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE ,Status.SUCCESS, message.getText(), message.getUser()); //At the moment this just echoes and doesnt handle sending to other clients
         
@@ -133,7 +132,7 @@ public class ClientHandler implements Runnable{
         else if (message.mainType == MainType.TEXT){
             switch (message.subType) {
                 case SubType.SEND_TEXT_MESSAGE:
-                    sendText(clientSocket, message);
+                    sendText(message);
                     break;
                 default:
                     System.out.println("Message Object Constructed Incorrectly");
@@ -152,7 +151,7 @@ public class ClientHandler implements Runnable{
                     //chat user function here
                     break;
                 case SubType.CREATE_GC:
-                    server.handleCreateGC(message, this);
+                    server.handleCreateChat(message, this);
                     break;
                 case SubType.ADD_USER_TO_GC:
                     server.handleAddUserToChat(message, this);

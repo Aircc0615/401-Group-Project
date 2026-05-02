@@ -102,7 +102,7 @@ public class Server {
 		
 	}
 
-	public void handleCreateGC(Message message, ClientHandler clientHandler) {
+	public void handleCreateChat(Message message, ClientHandler clientHandler) {
 		// TODO Auto-generated method stub
 		
 	}
