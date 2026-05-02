@@ -35,32 +35,36 @@ public class ClientHandler implements Runnable{
             OutputStream outputStream = clientSocket.getOutputStream();
             objectOutputStream = new ObjectOutputStream(outputStream); //this allows us to send stuff out to the client
 
-            
             Message message = (Message) objectInputStream.readObject(); //incoming message from client gets deserialized
-            messageList.add(message); //add the client message to the array of messages on the server side
-
-            if (message.mainType == MainType.AUTHENTICATION) { //if its a login
+            while(true) {
+            	messageList.add(message); //add the client message to the array of messages on the server side
+            	
+            	if (message.mainType == MainType.AUTHENTICATION) { //if its a login
+            			if(message.subType == SubType.CREATE_USER) {
+            				User newUser = performCreateNewUserOperation(message);
+            				break;
+            			}
                 User authenticatedUser = performLoginOperation(message); //returns true if its a valid user/false if not
 
-                if (authenticatedUser != null) { //if they're a valid user they can go ahead and send messages
-                    while (message.subType != SubType.LOGOUT) {
-                        message = (Message) objectInputStream.readObject(); //read the incoming object
-
-                        messageList.add(message); //add the incoming messages to the array
-
-                        performMessageOperation(clientSocket, clientInputStream, message, messageList); //this would perform the appropriate operation depending on the message Main and Sub types
-                    }
-
-                    Message logoutSuccess = new Message(MainType.AUTHENTICATION, SubType.LOGOUT, Status.SUCCESS, "Logout successful", null);
-                    messageList.add(logoutSuccess);
-                    objectOutputStream.writeObject(logoutSuccess);
-
-
-                    System.out.println("Closing Client Socket.");
-                    clientSocket.close();
+                if (authenticatedUser != null) {
+                	break; //if they're a valid user they can go ahead and send messages
                 }
+                System.err.println("Invalid User");
+            	}
             }
-            else System.out.println("Please enter a valid username and password");
+            while (message.subType != SubType.LOGOUT) {
+               message = (Message) objectInputStream.readObject(); //read the incoming object
+               messageList.add(message); //add the incoming messages to the array
+
+               performMessageOperation(clientSocket, clientInputStream, message, messageList); //this would perform the appropriate operation depending on the message Main and Sub types
+            }
+            Message logoutSuccess = new Message(MainType.AUTHENTICATION, SubType.LOGOUT, Status.SUCCESS, "Logout successful", null);
+            messageList.add(logoutSuccess);
+            objectOutputStream.writeObject(logoutSuccess);
+
+
+            System.out.println("Closing Client Socket.");
+            clientSocket.close();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -74,30 +78,11 @@ public class ClientHandler implements Runnable{
       return null;
     }
   
-  
-  
-    public boolean performAuthenticationOperation(Socket clientSocket, InputStream clientInputStream, Message message, List<Message> messageList) throws IOException {
-        //if they want to create a new user
-    	if(message.subType == SubType.CREATE_USER) {
-        	server.handleCreateNewUser(message, this);
-        	return false; // the user will need to login after creating the new account
-    	}
-    	//if the login is successful we perform the next step, otherwise we send a failed response
-    	else if(message.subType == SubType.LOGIN) {
-        	successfulLogin(); //at the moment the code will always send a successful respondse
-        	return true;
-        	/* this works but the client doesnt support creating new users just yet
-            boolean authenticated = server.authenticateUser(message.getUser());
-        	if(authenticated) {
-        		successfulLogin(); //this function at the moment just sends the user a successful login response message and adds the message to our message list array
-				return true; //if successful/this needs to be changed if false but for the current version set to true
-        	}
-	        else {
-	        	failedLoginAttempt();
-	        }
-	        */
-        }
+    public User performCreateNewUserOperation(Message message) throws IOException {
+    	User user = message.getUser();
+    	return server.handleCreateNewUser(user , this);
     }
+  
 
 //add logout operation method below:
 
