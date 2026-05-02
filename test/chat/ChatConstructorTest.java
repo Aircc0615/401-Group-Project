@@ -38,7 +38,7 @@ class ChatConstructorTest {
 
 	@Test
 	void constructorHasNoMessages() {
-		assertThrows(IllegalArgumentException.class,
+		assertThrows(IndexOutOfBoundsException.class,
 			() -> {chat.getMessage(0);});
 	}
 
@@ -51,7 +51,7 @@ class ChatConstructorTest {
 
 	@Test
 	void constructorDoesNotHaveInvalidMemberTotal() {
-				assertThrows(IllegalArgumentException.class, 
+				assertThrows(IndexOutOfBoundsException.class, 
 						() -> {chat.getMemberUsername(memberIds.length);});
 	}
 

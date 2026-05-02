@@ -67,7 +67,9 @@ public class Chat implements Serializable {
 			}
 			// inserts the new message and updates the timestamp for the chat
 			messages[messageIndex] = message;
-			newestUpdate = message.getTimestamp();
+			if(message.getTimestamp().compareTo(newestUpdate) > 0) {
+				newestUpdate = message.getTimestamp();
+			}
 			numMessages++;
 		}
 	}
