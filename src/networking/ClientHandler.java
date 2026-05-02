@@ -152,16 +152,16 @@ public class ClientHandler implements Runnable{
                     //chat user function here
                     break;
                 case SubType.CREATE_GC:
-                    //create gc function here
+                    handleCreateGC(message);
                     break;
                 case SubType.ADD_USER_TO_GC:
-                    //add user to gc function here
+                    handleAddUserToChat(message);
                     break;
                 case SubType.REMOVE_USER_FROM_GC:
-                    //remove user from gc function here
+                	handleRemoveUserFromChat(message);
                     break;
                 case SubType.DELETE_GC:
-                    //delete gc function here
+                	handleDeleteGC(message);
                     break;
                 default:
                     System.out.println("Message Object Constructed Incorrectly");
@@ -170,7 +170,7 @@ public class ClientHandler implements Runnable{
         else if(message.mainType == MainType.AUDIT_OPERATION){
             switch (message.subType) {
                 case SubType.ENTER_AUDIT_MODE:
-                    //audit mode function here
+                	handleEnterAuditMode(message);
                     break;
                 case SubType.SELECT_USER:
                     //user selection function here

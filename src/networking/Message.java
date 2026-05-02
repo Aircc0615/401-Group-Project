@@ -39,20 +39,6 @@ public class Message implements Serializable { //serialize takes the object and 
         date = new Date();
         timeStamp = Instant.now();
         user = null;
-        
-        username = "";
-        password = "";
-        success = false;
-        userId = -1;
-        
-        chatList = "";
-        chatUserList = "";
-        chatId = "";
-        selectedUserId = "";
-        messageContent = "";
-        chatType = "";
-        memberList = "";
-        chatLog = "";
     }
 
     public Message(MainType mainType, SubType subType, Status status, String text, User user){
@@ -64,20 +50,6 @@ public class Message implements Serializable { //serialize takes the object and 
         date = new Date();
         timeStamp = Instant.now();
         this.user = user;
-        
-        username = "";
-        password = "";
-        success = false;
-        userId = -1;
-        
-        chatList = "";
-        chatUserList = "";
-        chatId = "";
-        selectedUserId = "";
-        messageContent = "";
-        chatType = "";
-        memberList = "";
-        chatLog = "";
     }
 
     public MainType getType(){
@@ -117,21 +89,5 @@ public class Message implements Serializable { //serialize takes the object and 
     public boolean getSuccess() { return success; }
 
     public int getUserId() { return userId; }
-
-    public String getChatList() { return chatList; }
-
-    public String getChatUserList() { return chatUserList; }
-
-    public String getChatId() { return chatId; }
-
-    public String getSelectedUserId() { return selectedUserId; }
-
-    public String getMessageContent() { return messageContent; }
-
-    public String getChatType() { return chatType; }
-
-    public String getMemberList() { return memberList; }
-
-    public String getChatLog() { return chatLog; }
     
 }

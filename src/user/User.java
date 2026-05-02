@@ -4,7 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class User implements Serializable {
+<<<<<<< Updated upstream
 	private static int count = 0;
+=======
+    private static int count = 0;
+    private int id;
+>>>>>>> Stashed changes
     private static final int minLength= 6;
     private static final int maxLength = 20;
     private static final int maxChats = 100;
@@ -22,8 +27,13 @@ public class User implements Serializable {
     private int[] unreadChatIds;
     private int unreadChatCount;
 
+
     public User() {
+<<<<<<< Updated upstream
         this.id = count++;
+=======
+        id = count++;
+>>>>>>> Stashed changes
         this.username = "undefined";
         this.password = "undefined";
         this.online = false;
@@ -38,7 +48,11 @@ public class User implements Serializable {
     }
 
     public User(String username, String password) {
+<<<<<<< Updated upstream
         this.id = count++;
+=======
+    	id = count++;
+>>>>>>> Stashed changes
         this.username = username;
         this.password = password;
         this.online = false;
@@ -418,4 +432,9 @@ public class User implements Serializable {
             auditMode = false;
         }
     }
+
+	public int getId() {
+		// TODO Auto-generated method stub
+		return id;
+	}
 }
