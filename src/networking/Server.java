@@ -21,8 +21,8 @@ public class Server {
 	private static List<ClientHandler> currentClients = new ArrayList<>();
 	private int numCurrentClients;
 	private HashMap<Integer, ClientHandler> mapIdtoClient; //int is id, at the moment not being used but could be use for more efficient message routing
-	private UserLoginModule userLoginModule = new UserLoginModule(users); 
 	private HashMap<String, User> usernameToUser = new HashMap();
+	private UserLoginModule userLoginModule = new UserLoginModule(usernameToUser); 
 	
     public static void main(String[] args) throws IOException, ClassNotFoundException {
     	Server server = new Server();
@@ -59,9 +59,19 @@ public class Server {
     	return userLoginModule.authenticateUser(userToAuthenticate);
     }
     
-    public void createNewUser() {
-    	userLoginModule.createNewUser();
-    }
+    public void handleCreateNewUser(Message message, ClientHandler clientHandler) throws IOException {
+    	Message authenticationResponse = null;
+    	List<Message> messageToSend = new ArrayList<>();
+    	if(userLoginModule.createUser(message) != null) {
+    		users.add(message.getUser());
+	        authenticationResponse = new Message(MainType.CHAT_OPERATION, SubType.CREATE_USER , Status.SUCCESS, "User created successfully", message.getUser()); //create a login success message to send to the user
+    	}
+    	else {
+    		authenticationResponse = new Message(MainType.CHAT_OPERATION, SubType.CREATE_USER , Status.FAILED, "Failed to create new user", message.getUser());
+    	}
+    	messageToSend.add(authenticationResponse);
+    	clientHandler.sendToClient(messageToSend);
+	}
     
     public void sendToClients(List<Message> messages) throws IOException {
     	for(ClientHandler client: currentClients) {
@@ -83,16 +93,24 @@ public class Server {
 	public void handleCreateChat(Message message, ClientHandler clientHandler) {
 		String usersToBeAddedToChat = message.getUser().getUsername() + ", "+ message.getText();
 		String[] memberUsernames = usersToBeAddedToChat.split(","); //the usernames will be passed as a single string so we split
+		List<String> validUsers = new ArrayList<>();
+		
+		
 		for(int i = 0; i < memberUsernames.length; i++) {
-			memberUsernames[i] = memberUsernames[i].trim();
+			String userToValidate = memberUsernames[i].trim();
+			if(usernameToUser.containsKey(userToValidate)) {
+				validUsers.add(userToValidate);
+			}
 		}
 		
+		String[] chatUsers = validUsers.toArray(new String[0]);
+		
 		Chat newChat = null;
-		if(memberUsernames.length == 2) {
-			newChat = new Chat(message.getUser().getUsername(), memberUsernames, ChatType.PRIVATE);
+		if(chatUsers.length == 2) {
+			newChat = new Chat(message.getUser().getUsername(), chatUsers, ChatType.PRIVATE);
 		}
 		else {
-			newChat = new Chat(message.getUser().getUsername(), memberUsernames, ChatType.GROUP);
+			newChat = new Chat(message.getUser().getUsername(), chatUsers, ChatType.GROUP);
 		}
 		chats.addChat(newChat);
 	}
