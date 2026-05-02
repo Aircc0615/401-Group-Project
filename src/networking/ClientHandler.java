@@ -14,7 +14,7 @@ import user.User;
 public class ClientHandler implements Runnable{
     private final Socket clientSocket;
     private Server server;
-    private static List<Message> messageList = new ArrayList<>();
+    protected static List<Message> messageList = new ArrayList<>();
     
     ObjectInputStream objectInputStream;
     ObjectOutputStream objectOutputStream;
@@ -71,7 +71,32 @@ public class ClientHandler implements Runnable{
         if(message.subType == SubType.LOGIN) {
         	return server.authenticateUser(message.getUser(), this);
         }
-        return null;
+      return null;
+    }
+  
+  
+  
+    public boolean performAuthenticationOperation(Socket clientSocket, InputStream clientInputStream, Message message, List<Message> messageList) throws IOException {
+        //if they want to create a new user
+    	if(message.subType == SubType.CREATE_USER) {
+        	server.handleCreateNewUser(message, this);
+        	return false; // the user will need to login after creating the new account
+    	}
+    	//if the login is successful we perform the next step, otherwise we send a failed response
+    	else if(message.subType == SubType.LOGIN) {
+        	successfulLogin(); //at the moment the code will always send a successful respondse
+        	return true;
+        	/* this works but the client doesnt support creating new users just yet
+            boolean authenticated = server.authenticateUser(message.getUser());
+        	if(authenticated) {
+        		successfulLogin(); //this function at the moment just sends the user a successful login response message and adds the message to our message list array
+				return true; //if successful/this needs to be changed if false but for the current version set to true
+        	}
+	        else {
+	        	failedLoginAttempt();
+	        }
+	        */
+        }
     }
 
 //add logout operation method below:
@@ -109,9 +134,6 @@ public class ClientHandler implements Runnable{
                     break;
                 case SubType.CHAT_LIST:    //can someone clarify how to handle this message type
                 	server.handleChatList(message, this);
-                    break;
-                case SubType.CHAT_USER:    //can someone clarify how to handle this message type
-                	server.handleChatUser(message, this);
                     break;
                 case SubType.CREATE_GC:
                     server.handleCreateChat(message, this);

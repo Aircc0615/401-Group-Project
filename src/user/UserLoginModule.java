@@ -1,15 +1,19 @@
 package user;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+import networking.ClientHandler;
+import networking.Message;
+
 public class UserLoginModule {
-	private List<User> users;
+	private HashMap<String, User> usernameToUser;
 	static Scanner sin = new Scanner(System.in);
 	
-	public UserLoginModule(List<User> users) {
-		this.users = users;
+	public UserLoginModule(HashMap<String, User> usernameToUser) {
+		this.usernameToUser = usernameToUser;
 	}
 	
 	public User authenticateUser(User userLoggingIn) {
@@ -19,25 +23,26 @@ public class UserLoginModule {
 			}
 		}
 		return null;
-	}
-	
-	public void createNewUser() {
-		System.out.println("Enter new username");
-		String username = sin.nextLine();
-		
-		for(User user : users) {
-			if(user.getUsername().equals(username)) {
-				System.out.println("That username is already in use. Please try again!");
-				return;
-			}
+  }
+	public boolean authenticateUser(User userLoggingIn) {
+		String username = userLoggingIn.getUsername();
+		boolean userAuthenticated = false;
+		if(usernameToUser.containsKey(username)) {
+			userAuthenticated = usernameToUser.get(username).getPassword().equals(userLoggingIn.getPassword());
 		}
 		
-		System.out.println("Enter new password");
-		String password = sin.nextLine();
-		User newUser = new User(username, password);
-		
-		users.add(newUser);
+		return userAuthenticated;
 	}
 	
-	
+	public User createUser(Message message) {
+		String username = message.getUser().getUsername();
+		if(usernameToUser.containsKey(username)){
+			return null;
+		}
+		
+		usernameToUser.put(username, message.getUser());
+		return message.getUser();
+	}
+
+
 }
