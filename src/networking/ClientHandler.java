@@ -152,16 +152,16 @@ public class ClientHandler implements Runnable{
                     //chat user function here
                     break;
                 case SubType.CREATE_GC:
-                    handleCreateGC(message);
+                    server.handleCreateGC(message, this);
                     break;
                 case SubType.ADD_USER_TO_GC:
-                    handleAddUserToChat(message);
+                    server.handleAddUserToChat(message, this);
                     break;
                 case SubType.REMOVE_USER_FROM_GC:
-                	handleRemoveUserFromChat(message);
+                	server.handleRemoveUserFromChat(message, this);
                     break;
                 case SubType.DELETE_GC:
-                	handleDeleteGC(message);
+                	server.handleDeleteGC(message, this);
                     break;
                 default:
                     System.out.println("Message Object Constructed Incorrectly");
@@ -170,16 +170,16 @@ public class ClientHandler implements Runnable{
         else if(message.mainType == MainType.AUDIT_OPERATION){
             switch (message.subType) {
                 case SubType.ENTER_AUDIT_MODE:
-                	handleEnterAuditMode(message);
+                	server.handleEnterAuditMode(message, this);
                     break;
                 case SubType.SELECT_USER:
-                	handleAuditSelectUser(message);
+                	server.handleAuditSelectUser(message, this);
                     break;
                 case SubType.VIEW_CHATS:
-                	handleAuditViewChats(message);
+                	server.handleAuditViewChats(message, this);
                     break;
                 case SubType.EXPORT_CHAT_LOG:
-                	handleAuditExportChat(message);
+                	server.handleAuditExportChat(message, this);
                     break;
                 default:
                     System.out.println("Message Object Constructed Incorrectly");
@@ -191,45 +191,7 @@ public class ClientHandler implements Runnable{
     }
 
     
-	private void handleAuditExportChat(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void handleAuditViewChats(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void handleAuditSelectUser(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void handleEnterAuditMode(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void handleDeleteGC(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void handleRemoveUserFromChat(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void handleAddUserToChat(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void handleCreateGC(Message message) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	public void sendToClient(List<Message> messages) throws IOException {
 		objectOutputStream.writeObject(messages);

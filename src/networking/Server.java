@@ -66,11 +66,46 @@ public class Server {
     	}
     }
    
-    public void addUserToGroupChat(User user) {
-    	
-    }
     
+    public void handleAuditExportChat(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
 
+    public void handleAuditViewChats(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+    public void handleAuditSelectUser(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+    public void handleEnterAuditMode(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void handleDeleteGC(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void handleRemoveUserFromChat(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void handleAddUserToChat(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void handleCreateGC(Message message, ClientHandler clientHandler) {
+		// TODO Auto-generated method stub
+		
+	}
    
 
 }
