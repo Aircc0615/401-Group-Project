@@ -6,6 +6,8 @@ import chat.Chat;
 import chat.ChatList;
 
 public class User implements Serializable {
+    private static int count = 0;
+    private int id;
     private static final int minLength= 6;
     private static final int maxLength = 20;
 
@@ -20,7 +22,9 @@ public class User implements Serializable {
     private ChatList chatList;
     private ChatList unreadChatList;
 
+
     public User() {
+        id = count++;
         this.username = "undefined";
         this.password = "undefined";
         this.online = false;
@@ -33,6 +37,7 @@ public class User implements Serializable {
     }
 
     public User(String username, String password) {
+     	id = count++;
         this.username = username;
         this.password = password;
         this.online = false;
@@ -412,4 +417,9 @@ public class User implements Serializable {
             auditMode = false;
         }
     }
+
+	public int getId() {
+		// TODO Auto-generated method stub
+		return id;
+	}
 }

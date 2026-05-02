@@ -19,7 +19,7 @@ public class Server {
 	private int numCurrentClients;
 	private HashMap<Integer, ClientHandler> mapIdtoClient; //int is id, at the moment not being used but could be use for more efficient message routing
 	private UserLoginModule userLoginModule = new UserLoginModule(users); 
-	
+	private HashMap<String, User> usernameToUser = new HashMap();
 	
     public static void main(String[] args) throws IOException, ClassNotFoundException {
     	Server server = new Server();

@@ -152,16 +152,16 @@ public class ClientHandler implements Runnable{
                     //chat user function here
                     break;
                 case SubType.CREATE_GC:
-                    //create gc function here
+                    handleCreateGC(message);
                     break;
                 case SubType.ADD_USER_TO_GC:
-                    //add user to gc function here
+                    handleAddUserToChat(message);
                     break;
                 case SubType.REMOVE_USER_FROM_GC:
-                    //remove user from gc function here
+                	handleRemoveUserFromChat(message);
                     break;
                 case SubType.DELETE_GC:
-                    //delete gc function here
+                	handleDeleteGC(message);
                     break;
                 default:
                     System.out.println("Message Object Constructed Incorrectly");
@@ -170,16 +170,16 @@ public class ClientHandler implements Runnable{
         else if(message.mainType == MainType.AUDIT_OPERATION){
             switch (message.subType) {
                 case SubType.ENTER_AUDIT_MODE:
-                    //audit mode function here
+                	handleEnterAuditMode(message);
                     break;
                 case SubType.SELECT_USER:
-                    //user selection function here
+                	handleAuditSelectUser(message);
                     break;
                 case SubType.VIEW_CHATS:
-                    //view chat function here
+                	handleAuditViewChats(message);
                     break;
                 case SubType.EXPORT_CHAT_LOG:
-                    //export chat function here
+                	handleAuditExportChat(message);
                     break;
                 default:
                     System.out.println("Message Object Constructed Incorrectly");
@@ -191,6 +191,46 @@ public class ClientHandler implements Runnable{
     }
 
     
+	private void handleAuditExportChat(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void handleAuditViewChats(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void handleAuditSelectUser(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void handleEnterAuditMode(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void handleDeleteGC(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void handleRemoveUserFromChat(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void handleAddUserToChat(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void handleCreateGC(Message message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public void sendToClient(List<Message> messages) throws IOException {
 		objectOutputStream.writeObject(messages);
 	}
