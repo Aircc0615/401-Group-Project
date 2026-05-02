@@ -48,7 +48,7 @@ public class Client {
             String text;
             while(!clientSideSocket.isClosed()) {
             	text = sin.nextLine();
-            	sendMessage(user, text);
+            	sendMessage(text, 0); // currently chat id of 0 (!! Must change when integrating with GUI !!)
             }
         }
     }
@@ -80,6 +80,15 @@ public class Client {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+	            }
+	            else if(msg.subType == SubType.SEND_TEXT_MESSAGE) {
+	            	if(msg.status == Status.FAILED) {
+	            		System.err.println("Failed message sent sent to " + msg.getChatId());
+	            	} else if (msg.status == Status.SUCCESS){
+	            		user.addMessageToChat(msg.getChatId(), msg.getTextMessage());
+	            		//Put logic here to update gui view of chat/chatlist
+	            		//gui.updatechatlist(msg.getChatId()) <- will update the chat as well
+	            	}
 	            }
 	            else { 
 	            	if(msg.getUser() != null)
@@ -131,11 +140,10 @@ public class Client {
 	
 	// MESSAGE: MainType.TEXT
 	// SubType.SEND_TEXT_MESSAGE
-	public static void sendMessage(User user, String text) throws IOException {
-		TextMessage textMessage = new TextMessage(text, user.getUsername(), user.getId()); //let 0 represent some userID
-        Message message = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE , Status.REQUEST, textMessage.getText(), user);
-        messageHistory.add(message); //the message the user input should be sent
-        objectOutputStream.writeObject(message); //where the object gets serialized and sent     
+	public static void sendMessage(String text, int chatId) throws IOException {
+    Message message = new Message(MainType.TEXT, SubType.SEND_TEXT_MESSAGE , Status.REQUEST, text, user.getUsername(), chatId);
+    messageHistory.add(message); //the message the user input should be sent
+    objectOutputStream.writeObject(message); //where the object gets serialized and sent     
 	}
 
 	

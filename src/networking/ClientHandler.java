@@ -69,7 +69,7 @@ public class ClientHandler implements Runnable{
     public User performLoginOperation(Message message) throws IOException {
         //if the login is successful we perform the next step, otherwise we send a failed response
         if(message.subType == SubType.LOGIN) {
-        	return server.authenticateUser(message.getUser());
+        	return server.authenticateUser(message.getUser(), this);
         }
         return null;
     }
@@ -95,7 +95,7 @@ public class ClientHandler implements Runnable{
             switch (message.subType) {
                 case SubType.SEND_TEXT_MESSAGE:
                 	System.out.println("From " + clientSocket.getInetAddress().getHostAddress() + ": " + message.getText()); //display message along with who its from
-                    server.handleSendText(message);
+                    handleSendText(message);
                     break;
                 default:
                     System.out.println("Message Object Constructed Incorrectly");
@@ -168,5 +168,16 @@ public class ClientHandler implements Runnable{
 
 	public void sendToClient(List<Message> messages) throws IOException {
 		objectOutputStream.writeObject(messages);
+	}
+
+	private void handleSendText(Message message) {
+		String text = message.getText();
+		String username = message.getUsername();
+		int chatId = message.getChatId();
+		try {
+			server.handleSendText(text, username, chatId);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

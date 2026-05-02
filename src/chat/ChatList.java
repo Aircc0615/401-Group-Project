@@ -73,12 +73,12 @@ public class ChatList {
 		return chats[chatIndex].getMessage(messageIndex);
 	}
 
-	public String getChatMemberUsername(int chatId, int memberIndex) {
+	public boolean chatMemberIsInChat(int chatId, String memberUsername) {
 		Chat[] tempChats = chats;
 		int chatIndex = parseId(tempChats, chatId);
 		if(chatIndex == -1)
 			throw new IndexOutOfBoundsException();
-		return chats[chatIndex].getMemberUsername(memberIndex);
+		return chats[chatIndex].memberIsInChat(memberUsername);
 	}
 
 	public Instant getChatNewestUpdate(int chatId) {
@@ -250,7 +250,27 @@ public class ChatList {
 	public int getNumChats() {
 		return numChats;
 	}
+	public int getNumChatMembers(int chatId) {
+		Chat[] tempChats = chats;
+		int chatIndex = parseId(tempChats, chatId);
+		if(chatIndex == -1)
+			throw new IndexOutOfBoundsException();
+		return tempChats[chatId].getNumMembers();
+	}
+	public int getNumChatMessages(int chatId) {
+		Chat[] tempChats = chats;
+		int chatIndex = parseId(tempChats, chatId);
+		if(chatIndex == -1)
+			throw new IndexOutOfBoundsException();
+		return tempChats[chatId].getNumMessages();
+	}
 	public Chat getCopyOfChat(int chatId) {
-		return chats[chatId].getCopy();
+		Chat[] tempChats = chats;
+		return tempChats[chatId].getCopy();
+	}
+
+	public String[] getChatMembers(int chatId) {
+		Chat[] tempChats = chats;
+		return tempChats[chatId].getMembersInChat();
 	}
 }
