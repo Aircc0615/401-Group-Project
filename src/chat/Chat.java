@@ -29,7 +29,7 @@ public class Chat implements Serializable {
 		mutexObject = new Object();
 	}
 
-	public Chat(TextMessage[] messages, int numMessages, String[] memberUsernames, 
+	private Chat(TextMessage[] messages, int numMessages, String[] memberUsernames, 
 			int numMembers, ChatType chatType,
 			String creatorUsername, int chatId, Instant newestUpdate) {
 		this.messages = messages;
@@ -56,10 +56,20 @@ public class Chat implements Serializable {
 				}
 				messages = newMessages;
 			}
+			int messageIndex;
+			for(messageIndex = 0; messageIndex < numMessages; messageIndex++) {
+				if(message.getTimestamp()
+						.compareTo(messages[messageIndex].getTimestamp()) <= 0)
+					break;
+			}
+			for(int i = numMessages; i > messageIndex; i--) {
+				messages[i] = messages[i-1];
+			}
+			// inserts the new message and updates the timestamp for the chat
+			messages[messageIndex] = message;
+			newestUpdate = message.getTimestamp();
+			numMessages++;
 		}
-		// inserts the new message and updates the timestamp for the chat
-		messages[numMessages++] = message;
-		newestUpdate = message.getTimestamp();
 	}
 
 	public TextMessage getMessage(int messageIndex) {
