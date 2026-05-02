@@ -1,12 +1,11 @@
-package test.chat;
+package chat;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import src.chat.TextMessage;
 
 class TextMessageTest {
 	private static int userId;

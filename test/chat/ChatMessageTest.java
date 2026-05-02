@@ -1,17 +1,13 @@
-package test.chat;
+package chat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import src.chat.TextMessage;
-import src.chat.ChatType;
-import src.chat.Chat;
-
 class ChatMessageTest{
-	private static int[] memberIds = {1, 2, 3, 4, 5, 6};
-	private static int creatorId = 1;
+	private static String[] memberIds = {"1", "2", "3","4", "5", "6"};
+	private static String creatorId = "1";
 	private Chat chat;
 
 	@BeforeEach
@@ -21,7 +17,7 @@ class ChatMessageTest{
 
 	@Test
 	void chatAddMessageToChat() {
-		TextMessage message = new TextMessage("test text", "user1", creatorId);
+		TextMessage message = new TextMessage("test text", "user1", Integer.parseInt(creatorId));
 		chat.addMessage(message);
 		assertSame(message, chat.getMessage(0));
 	}
@@ -31,7 +27,7 @@ class ChatMessageTest{
 		TextMessage[] messageList = new TextMessage[50];
 		TextMessage mes;
 		for(int i = 0; i < 50; i++) {
-			mes = new TextMessage("test text" + i, "user1", creatorId);
+			mes = new TextMessage("test text" + i, "user1", Integer.parseInt(creatorId));
 			messageList[i] = mes;
 			chat.addMessage(mes);
 		}
@@ -47,7 +43,7 @@ class ChatMessageTest{
 	void chatSavesMostRecentTimestamp() {
 		TextMessage[] messageList = new TextMessage[5];
 		for(int i = 0; i < 5; i++) {
-			messageList[i] = new TextMessage("test text" + i, "user1", creatorId);
+			messageList[i] = new TextMessage("test text" + i, "user1", Integer.parseInt(creatorId));
 		}
 		chat.addMessage(messageList[0]);
 		chat.addMessage(messageList[3]);
@@ -61,7 +57,7 @@ class ChatMessageTest{
 	void chatMessagesSortedByTime() {
 		TextMessage[] messageList = new TextMessage[5];
 		for(int i = 0; i < 5; i++) {
-			messageList[i] = new TextMessage("test text" + i, "user1", creatorId);
+			messageList[i] = new TextMessage("test text" + i, "user1", Integer.parseInt(creatorId));
 		}
 		chat.addMessage(messageList[0]);
 		chat.addMessage(messageList[3]);
@@ -79,7 +75,7 @@ class ChatMessageTest{
 
 	@Test
 	void chatMessageInvalidMessageIndex() {
-		chat.addMessage(new TextMessage("test text", "user1", creatorId));
+		chat.addMessage(new TextMessage("test text", "user1", Integer.parseInt(creatorId)));
 		assertThrows(IndexOutOfBoundsException.class, 
 				() -> chat.getMessage(1));
 	}

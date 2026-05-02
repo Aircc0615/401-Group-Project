@@ -37,7 +37,7 @@ public class User implements Serializable {
     }
 
     public User(String username, String password) {
-    	id = count++;
+     	id = count++;
         this.username = username;
         this.password = password;
         this.online = false;

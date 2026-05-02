@@ -1,17 +1,13 @@
-package test.chat;
+package chat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import src.chat.TextMessage;
-import src.chat.ChatType;
-import src.chat.Chat;
-
-class ChatMemberTest{
-	private static int[] memberIds = {1, 2, 3, 4, 5, 6};
-	private static int creatorId = 1;
+class ChatMemberTest {
+	private static String[] memberIds = {"1", "2", "3","4", "5", "6"};
+	private static String creatorId = "1";
 	private Chat chat;
 
 	@BeforeEach
@@ -21,23 +17,24 @@ class ChatMemberTest{
 
 	@Test
 	void chatAddMemberToChat() {
-		chat.addMember(7);
-		assertSame(7, chat.getMemberId(6));
+		chat.addMember("7");
+		assertEquals("7", chat.getMemberUsername(6));
 	}
 
 	@Test
 	void chatAdd50MembersToChat() {
-		int[] membersList = new int[56];
+		String[] membersList = new String[56];
 		for(int i = 0; i < 6; i++)
 			membersList[i] = memberIds[i];
 		for(int i = 6; i < 56; i++) {
-			membersList[i] = i;
-			chat.addMember(i);
+			String username = "" + i;
+			membersList[i] = username;
+			chat.addMember(username);
 		}
 		assertAll(
 			() -> {
 				for(int i = 0; i < 56; i++) {
-					assertEquals(membersList[i], chat.getMemberId(i));
+					assertEquals(membersList[i], chat.getMemberUsername(i));
 				}
 			});
 	}
@@ -45,31 +42,31 @@ class ChatMemberTest{
 	@Test
 	void chatCreatorIsImmutable() {
 		for(int i = 0; i < 500; i++) {
-			chat.addMember(i + 7);
+			chat.addMember("" + (i + 7));
 		}
-		assertEquals(creatorId, chat.getCreatorId());
+		assertEquals(creatorId, chat.getCreatorUsername());
 	}
 
 	@Test
 	void chatMembersSorted() {
 		for(int i = 0; i < 500; i++) {
-			chat.addMember(i + 7);
+			chat.addMember("" + (i + 7));
 		}
 		assertAll(
 			() -> {
 				for(int i = 0; i < 506; i++) {
-					assertTrue(chat.getMemberId(i) < chat.getMemberId(i + 1));
+					assertTrue(Integer.parseInt(chat.getMemberUsername(i)) < Integer.parseInt(chat.getMemberUsername(i + 1)));
 				}
 			});
 	}
 
 	@Test
 	void chatRemoveMember() {
-		chat.removeMember(2);
+		chat.removeMember("2");
 		assertAll(
 				() -> {
 					for(int i = 0; i < 5; i++)
-						assertNotEquals(chat.getMemberId(i), 2);
+						assertNotEquals(chat.getMemberUsername(i), "2");
 				});
 	}
 
@@ -81,14 +78,14 @@ class ChatMemberTest{
 
 	@Test
 	void chatMemberInvalidMemberIndex() {
-		chat.addMember(7);
+		chat.addMember("7");
 		assertThrows(IndexOutOfBoundsException.class, 
-				() -> chat.getMemberId(7));
+				() -> chat.getMemberUsername(7));
 	}
 
 	@Test
 	void chatMemberNegativeMemberIndex() {
 		assertThrows(IndexOutOfBoundsException.class, 
-				() -> chat.getMemberId(-1));
+				() -> chat.getMemberUsername(-1));
 	}
 }

@@ -1,126 +1,256 @@
+package chat;
 
-	package chat;
 import java.time.Instant;
 
+
+
+//might need to add a semaphore for addchat/deletechat synchronization
 public class ChatList {
 	private Chat[] chats;
 	private int numChats;
-	
+	private Object writeMutex;
+
 	public ChatList() {
-		//default chat size
+		// default chat size
 		chats = new Chat[8];
 		numChats = 0;
+		writeMutex = new Object();
 	}
-	
 
-	//inserts a chat in the array based on the order of the timestamp
+	// inserts a chat in the array based on the order of the timestamp
 	public void addChat(Chat chat) {
-		//makes more space if needed (2x)
-		if(numChats >= chats.length) {
-			Chat[] newChats = new Chat[chats.length * 2];
-			for(int i = 0; i <  chats.length; i++) {
-				newChats[i] = chats[i];
+		synchronized (writeMutex) {
+			int chatId = chat.getChatId();
+			Chat[] tempChats = getCopyOfChats();
+			int chatIndex = parseId(tempChats, chatId);
+			if(chatIndex != -1)
+				return;
+			// makes more space if needed (2x)
+			if (numChats >= tempChats.length) {
+				Chat[] newChats = new Chat[tempChats.length * 2];
+				for (int i = 0; i < tempChats.length; i++) {
+					newChats[i] = tempChats[i];
+				}
+				tempChats = newChats;
 			}
-			chats = newChats;
-		}
-		//find the index based on the chat timestamp order
-		int arrayIndex;
-		for(arrayIndex = 0; arrayIndex < numChats; arrayIndex++) {
-			Chat checkChat = chats[arrayIndex];
-			if(checkChat.getNewestUpdate().compareTo(chat.getNewestUpdate()) <= 0)
-				break;
-		}
-		//shift array up
-		for(int i = numChats; i > arrayIndex; i--) {
-			chats[i] = chats[i-1];
-		}
-		//insert chat and increment num chats
-		chats[arrayIndex] = chat;
-		numChats++;
-	}
-	
 
-	//getters
-	public TextMessage getChatMessage(int chatIndex, int messageIndex) {
+			tempChats[numChats] = chat;
+			reorderList(tempChats, numChats);
+			chats = tempChats;
+			numChats++;
+		}
+	}
+
+	//Methods for server to call when server chat list invites users to a chat
+	//Insert chat to 1 list
+	public void insertChatToOneList(ChatList otherChatList, int chatId) {
+		Chat[] tempChats = chats;
+		int chatIndex = parseId(tempChats, chatId);
+		if(chatIndex == -1)
+			throw new IndexOutOfBoundsException();
+		otherChatList.addChat(tempChats[chatIndex]);
+	}
+	//Insert chat to multiple lists
+	public void insertChatToMultipleLists(ChatList[] otherChatLists, int chatId) {
+		Chat[] tempChats = chats;
+		int chatIndex = parseId(tempChats, chatId);
+		if(chatIndex == -1)
+			throw new IndexOutOfBoundsException();
+		for(ChatList otherChatList : otherChatLists) {
+			if(otherChatList == null)
+				break;
+			otherChatList.addChat(tempChats[chatIndex]);
+		}
+	}
+	//
+
+	// getters
+	public TextMessage getChatMessage(int chatId, int messageIndex) {
+		Chat[] tempChats = chats;
+		int chatIndex = parseId(tempChats, chatId);
+		if(chatIndex == -1)
+			throw new IndexOutOfBoundsException();
 		return chats[chatIndex].getMessage(messageIndex);
 	}
-	
-	public int getChatMemberId(int chatIndex, int memberIndex) {
-		return chats[chatIndex].getMemberId(memberIndex);
+
+	public String getChatMemberUsername(int chatId, int memberIndex) {
+		Chat[] tempChats = chats;
+		int chatIndex = parseId(tempChats, chatId);
+		if(chatIndex == -1)
+			throw new IndexOutOfBoundsException();
+		return chats[chatIndex].getMemberUsername(memberIndex);
 	}
-	
-	public Instant getChatNewestUpdate(int chatIndex) {
+
+	public Instant getChatNewestUpdate(int chatId) {
+		Chat[] tempChats = chats;
+		int chatIndex = parseId(tempChats, chatId);
+		if(chatIndex == -1)
+			throw new IndexOutOfBoundsException();
 		return chats[chatIndex].getNewestUpdate();
 	}
-	
-	public Chat getChat(int chatIndex) {
-		return chats[chatIndex];
-	}
-	
 
-	//add message
-	public void addChatMessage(int chatIndex, TextMessage message) {
-		chats[chatIndex].addMessage(message);
+	// add message
+	public void addChatMessage(int chatId, TextMessage message) {
+		synchronized (writeMutex) {
+			Chat[] tempChats = getCopyOfChats();
+			int chatIndex = parseId(tempChats, chatId);
+			if(chatIndex == -1)
+				throw new IndexOutOfBoundsException();
+			tempChats[chatIndex].addMessage(message);
+			reorderList(tempChats, chatIndex);
+			chats = tempChats;
+		}
 	}
 
-	//attempt to add a member to a chat
-	public void addChatMember(int chatIndex, int memberId, int fromId) {
-		//confirm that the user is the chat owner in a group chat
-		Chat chat = chats[chatIndex];
-		if(chat.getChatType() == ChatType.PRIVATE)
+	// attempt to add a member to a chat
+	public void addChatMember(int chatId, String memberUsername, String fromUsername) {
+		// confirm that the user is the chat owner in a group chat
+		Chat[] tempChats = chats;
+		int chatIndex = parseId(tempChats, chatId);
+		if(chatIndex == -1)
+			throw new IndexOutOfBoundsException();
+		Chat chat = tempChats[chatIndex];
+		if (chat.getChatType() == ChatType.PRIVATE)
 			return;
-		if(chat.getCreatorId() != fromId)
+		if (chat.getCreatorUsername() != fromUsername)
 			return;
-		chat.addMember(memberId); //add member
+		chat.addMember(memberUsername); // add member
 	}
-	
 
-	//attempt to remove a member from a chat
-	public void removeChatMember(int chatIndex, int memberId, int fromId) {
-		//confirm that the user is the chat owner in a group chat
-		Chat chat = chats[chatIndex];
-		if(chat.getChatType() == ChatType.PRIVATE)
+	// attempt to remove a member from a chat
+	public void removeChatMember(int chatId, String memberUsername, String fromUsername) {
+		// confirm that the user is the chat owner in a group chat
+		Chat[] tempChats = chats;
+		int chatIndex = parseId(tempChats, chatId);
+		if(chatIndex == -1)
+			throw new IndexOutOfBoundsException();
+		Chat chat = tempChats[chatIndex];
+		if (chat.getChatType() == ChatType.PRIVATE)
 			return;
-		if(chat.getCreatorId() != fromId)
+		if (chat.getCreatorUsername() != fromUsername)
 			return;
-		chat.removeMember(memberId); //remove member
+		chat.removeMember(memberUsername); // remove member
 	}
-	
 
-	//Attempts the delete the chat with id "chatId"
-	public void deleteChat(int chatId, int fromId) {
-		int indexInArray = 0; // attempts to find the chat to delete
-		while(indexInArray < numChats) {
-			if(chats[indexInArray].getChatId() == chatId) {
-				break; // break if find
+	// Attempts the delete the chat with id "chatId"
+	public void deleteChat(int chatId, String fromUsername) {
+		synchronized (writeMutex) {
+			Chat[] tempChats = getCopyOfChats();
+			int indexInArray = parseId(tempChats, chatId);
+			if (indexInArray == -1) {
+				return; // Do nothing if not in array
 			}
-			indexInArray++;
+			// confirm that the user is the chat owner in a group chat
+			Chat chat = tempChats[indexInArray];
+			if (chat.getChatType() == ChatType.PRIVATE)
+				return;
+			if (chat.getCreatorUsername() != fromUsername)
+				return;
+			// remove the chat
+			for (int i = indexInArray; i < (numChats - 1); i++) {
+				tempChats[i] = tempChats[i + 1]; // shift array down 1
+			}
+			chats = tempChats;
+			numChats--; // decrement numchats
 		}
-		if(indexInArray >= numChats) {
-			return; // Do nothing if not in array
-		}
-		//confirm that the user is the chat owner in a group chat
-		Chat chat = chats[indexInArray];
-		if(chat.getChatType() == ChatType.PRIVATE)
-			return;
-		if(chat.getCreatorId() != fromId)
-			return;
-		//remove the chat
-		for(int i = indexInArray; i < (numChats - 1); i++) {
-			chats[i] = chats[i+1]; // shift array down 1
-		}
-		numChats--; // decrement numchats
 	}
-	
 
-	//returns a string of all chat ids in the list separated by ','
+	public void deleteChat(int chatId, boolean isBuffer) {
+		synchronized (writeMutex) {
+			if(!isBuffer)
+				return;
+			Chat[] tempChats = getCopyOfChats();
+			int indexInArray = parseId(tempChats, chatId);
+			if (indexInArray == -1) {
+				return; // Do nothing if not in array
+			}
+			// confirm that the user is the chat owner in a group chat
+			Chat chat = tempChats[indexInArray];
+			// remove the chat
+			for (int i = indexInArray; i < (numChats - 1); i++) {
+				tempChats[i] = tempChats[i + 1]; // shift array down 1
+			}
+			chats = tempChats;
+			numChats--; // decrement numchats
+		}
+	}
+
+	// returns a string of all chat ids in the list separated by ','
 	public String toString() {
 		String retStr = "";
-		for(int i = 0; i < numChats; i++) {
-			if(i != 0)
+		int tempNumChats = numChats;
+		Chat[] tempChats = chats;
+		for (int i = 0; i < tempNumChats; i++) {
+			if (i != 0)
 				retStr += ',';
-			retStr += chats[i].getChatId();
+			retStr += tempChats[i].getChatId();
 		}
 		return retStr;
+	}
+
+	public int[] getChatIds() {
+		int tempNumChats = numChats;
+		int[] chatIds = new int[tempNumChats];
+		Chat[] tempChats = chats;
+		for (int i = 0; i < tempNumChats; i++) {
+			chatIds[i] = tempChats[i].getChatId();
+		}
+		return chatIds;
+	}
+
+	public void updateOrder(int chatId) {
+		synchronized (writeMutex) {
+			Chat[] tempChats = getCopyOfChats();
+			int chatIndex = parseId(tempChats, chatId);
+			if(chatIndex == -1)
+				return;
+			reorderList(tempChats, chatIndex);
+			chats = tempChats;
+		}
+	}
+
+	private void reorderList(Chat[] tempChats, int updatedChatIndex) {
+		if (updatedChatIndex == 0)
+			return;
+		int i;
+		for (i = 0; i < updatedChatIndex; i++) {
+			if (tempChats[i].getNewestUpdate().compareTo(tempChats[updatedChatIndex].getNewestUpdate()) <= 0)
+				break;
+		}
+		if (i == updatedChatIndex)
+			return;
+		Chat tempChat = tempChats[updatedChatIndex];
+		for (int j = updatedChatIndex; j > i; j--) {
+			tempChats[j] = tempChats[j - 1];
+		}
+		tempChats[i] = tempChat;
+	}
+
+	private Chat[] getCopyOfChats() {
+		int tempNumChats = numChats;
+		Chat[] tempChats = chats;
+		Chat[] newChats = new Chat[tempChats.length];
+		for (int i = 0; i < tempNumChats; i++) {
+			newChats[i] = tempChats[i];
+		}
+		return newChats;
+	}
+
+	private int parseId(Chat[] chatsToParse, int chatId) {
+		int tempNumChats = numChats;
+		for(int i = 0; i < tempNumChats; i++) {
+			if(chatsToParse[i].getChatId() == chatId) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	//helper
+	public int getNumChat() {
+		return numChats;
+	}
+	public Chat getChat(int chatIndex) {
+		return chats[chatIndex];
 	}
 }

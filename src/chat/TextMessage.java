@@ -12,6 +12,7 @@ public class TextMessage {
 		this.text = text;
 		this.username = username;
 		this.userId = userId;
+		this.timestamp = timestamp;
 	}
 	
 
